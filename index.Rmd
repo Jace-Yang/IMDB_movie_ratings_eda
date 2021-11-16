@@ -1,6 +1,6 @@
 --- 
-title: "YOUR TITLE HERE"
-author: "YOUR NAMES HERE"
+title: "IMDB Movies Rating Analysis"
+author: "Jace Yang, Meggie Wen"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
