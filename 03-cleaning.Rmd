@@ -8,9 +8,22 @@ editor_options:
 ```{r, include=FALSE}
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source("srcs/helpers.R")
-
 ```
 
+```{r, eval=FALSE}
+#name.basics = fread(file = 'data/input/name.basics.tsv')
+ratings = fread(file = 'data/input/title.ratings.tsv')
+#principals = fread(file = 'data/input/title.principals.tsv')
+#episode = fread(file = 'data/input/title.episode.tsv')
+#crew = fread(file = 'data/input/title.crew.tsv')
+basics <- fread( 'data/input/title.basics.tsv')
+#akas = fread(file = 'data/input/title.akas.tsv')
 
-
+ratings %>% 
+  inner_join(basics) %>%
+  as_tibble() -> imdb
+imdb %>% head(100000) -> imdb_sample
+save(imdb, file = "data/processing/imdb.RData")
+save(imdb_sample, file = "data/processing/imdb_sample.RData")
+```
 

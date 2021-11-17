@@ -5,26 +5,3 @@ editor_options:
 ---
 # Data sources
 
-```{r, include=FALSE}
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-source("srcs/helpers.R")
-
-```
-
-```{r, eval=FALSE}
-name.basics = read.table(file = 'data/input/name.basics.tsv', sep = '\t', header = TRUE, fill = TRUE)
-ratings = read.table(file = 'data/input/title.ratings.tsv', sep = '\t', header = TRUE, fill = TRUE)
-principals = read.table(file = 'data/input/title.principals.tsv', sep = '\t', header = TRUE, fill = TRUE)
-episode = read.table(file = 'data/input/title.episode.tsv', sep = '\t', header = TRUE, fill = TRUE)
-crew = read.table(file = 'data/input/title.crew.tsv', sep = '\t', header = TRUE, fill = TRUE)
-basics = read.table(file = 'data/input/title.basics.tsv', sep = '\t', header = TRUE, fill = TRUE)
-akas = read.table(file = 'data/input/title.akas.tsv', sep = '\t', header = TRUE, fill = TRUE)
-
-
-ratings %>% left_join(basics) %>%
-  as_tibble() -> imdb
-
-save(imdb, file = "data/processing/imdb.RData")
-imdb %>% head(100000) -> imdb_sample
-save(imdb_sample, file = "data/processing/imdb_sample.RData")
-```

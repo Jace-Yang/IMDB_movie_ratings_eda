@@ -78,12 +78,13 @@
 <li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a></li>
 <li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#missing-patterns"><i class="fa fa-check"></i><b>4.1</b> Missing patterns</a></li>
+<li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#missing-value-recognition"><i class="fa fa-check"></i><b>4.1</b> Missing value recognition</a></li>
 <li class="chapter" data-level="4.2" data-path="missing-values.html"><a href="missing-values.html#missing-plot"><i class="fa fa-check"></i><b>4.2</b> Missing plot</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a></li>
 <li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
+<li class="chapter" data-level="8" data-path="data-sources-1.html"><a href="data-sources-1.html"><i class="fa fa-check"></i><b>8</b> Data sources</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -105,27 +106,60 @@
             <section class="normal" id="section-">
 <div id="missing-values" class="section level1" number="4">
 <h1><span class="header-section-number">Chapter 4</span> Missing values</h1>
-<div id="missing-patterns" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Missing patterns</h2>
-<pre><code>## # A tibble: 161 × 3
-## # Groups:   name [11]
+<div id="missing-value-recognition" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Missing value recognition</h2>
+<ul>
+<li>First we need to understand how the NA is encoded in the dataset. So we calculate the most common value among each colomns:</li>
+</ul>
+<pre><code>## # A tibble: 446 × 3
+## # Groups:   name [33]
 ##    name          value nunique
 ##    &lt;chr&gt;         &lt;chr&gt;   &lt;int&gt;
-##  1 averageRating 6.6      3896
-##  2 averageRating 6.2      3872
-##  3 averageRating 6.4      3872
-##  4 averageRating 6.5      3816
-##  5 averageRating 6.8      3804
-##  6 averageRating 6.3      3780
-##  7 averageRating 6        3630
-##  8 averageRating 6.7      3627
-##  9 averageRating 6.1      3552
-## 10 averageRating 7        3502
-## # … with 151 more rows</code></pre>
+##  1 averageRating 6.4       142
+##  2 averageRating 6.2       136
+##  3 averageRating 6.6       132
+##  4 averageRating 7         132
+##  5 averageRating 6.7       123
+##  6 averageRating 7.3       119
+##  7 averageRating 6.5       118
+##  8 averageRating 6.1       117
+##  9 averageRating 6.3       116
+## 10 averageRating 6.8       115
+## # … with 436 more rows</code></pre>
+<ul>
+<li>Apparently, <code>\N</code> is likely to be a tag for missing value.</li>
+</ul>
+<pre><code>## # A tibble: 4 × 11
+##   tconst     averageRating numVotes titleType primaryTitle originalTitle isAdult
+##   &lt;chr&gt;              &lt;dbl&gt;    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;           &lt;int&gt;
+## 1 tt0138704            7.4   174798 movie     Pi           Pi                  0
+## 2 tt13208888           8.6        5 tvEpisode Pi           Pi                  0
+## 3 tt2731446            8.9        8 short     Pi           Pi                  0
+## 4 tt5694266            4         24 short     Pi           Pi                  0
+## # … with 4 more variables: startYear &lt;chr&gt;, endYear &lt;chr&gt;,
+## #   runtimeMinutes &lt;chr&gt;, genres &lt;chr&gt;</code></pre>
 </div>
 <div id="missing-plot" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Missing plot</h2>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-7-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-11-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<ul>
+<li>有超过60%的rows都出现了 endYear pattern的缺失，但是没关系</li>
+</ul>
+<pre><code>## # A tibble: 1,195,712 × 11
+##    tconst    averageRating numVotes titleType primaryTitle originalTitle isAdult
+##    &lt;chr&gt;             &lt;dbl&gt;    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;           &lt;int&gt;
+##  1 tt0000001           5.7     1836 short     Carmencita   Carmencita          0
+##  2 tt0000002           6        236 short     Le clown et… Le clown et …       0
+##  3 tt0000003           6.5     1597 short     Pauvre Pier… Pauvre Pierr…       0
+##  4 tt0000004           6        153 short     Un bon bock  Un bon bock         0
+##  5 tt0000005           6.2     2412 short     Blacksmith … Blacksmith S…       0
+##  6 tt0000006           5.2      158 short     Chinese Opi… Chinese Opiu…       0
+##  7 tt0000007           5.4      755 short     Corbett and… Corbett and …       0
+##  8 tt0000008           5.5     1982 short     Edison Kine… Edison Kinet…       0
+##  9 tt0000009           5.9      191 short     Miss Jerry   Miss Jerry          0
+## 10 tt0000010           6.9     6606 short     Leaving the… La sortie de…       0
+## # … with 1,195,702 more rows, and 4 more variables: startYear &lt;chr&gt;,
+## #   endYear &lt;chr&gt;, runtimeMinutes &lt;chr&gt;, genres &lt;chr&gt;</code></pre>
 
 </div>
 </div>

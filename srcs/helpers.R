@@ -26,6 +26,7 @@ if(!require(GGally)) install.packages("GGally")
 if(!require(plotly)) install.packages("plotly")
 if(!require(forcats)) install.packages("forcats")
 if(!require(stringr)) install.packages("stringr")
+if(!require(data.table)) install.packages("data.table")
 
 if(!require(ggpubr)) install.packages("ggpubr")
 if(!require(PupillometryR)) install.packages("PupillometryR")
@@ -185,9 +186,17 @@ axis_unit_scaler_1 <- function(n, digits = 1){
   return(labels)
 }
 
-plot_missing <- function(df, percent=F){
+plot_missing <- function(df, percent=F, long_axis = F){
   n_row = nrow(df)
   variables = colnames(df)
+  
+  if(long_axis){
+    theme_axis_text_x = theme(axis.text.x = element_text(angle = 20,
+                                                         hjust = 0.95,
+                                                         vjust = 0.9))
+  }else{
+    theme_axis_text_x = theme(axis.text.x = element_text(angle = 0))
+  }
   
   missing_patterns <- data.frame(is.na(df)) %>%
     group_by_all() %>%
@@ -237,13 +246,14 @@ plot_missing <- function(df, percent=F){
                fill = is_na)) +
     geom_tile(color = "white", show.legend = FALSE) + 
     geom_text(aes(label=na_text),
-              size = 6.5,
+              size = ifelse(nrow(missing_patterns) > 20, 4.5, 6.5),
               color = "gray25",
               na.rm = TRUE) +
     scale_fill_manual(values = c("na" = "gray",
                                  "not_na" = "#85C1E9", 
                                  "not_na_and_complete" = "#D6EAF8")) +
     theme_bw() +
+    theme_axis_text_x +
     labs(x = "variable",
          y = "missing pattern",
          fill='none') -> p_na_pattern
@@ -272,6 +282,7 @@ plot_missing <- function(df, percent=F){
       theme_bw() +
       theme(panel.grid.major.x = element_blank(),
             panel.grid.minor.x = element_blank()) +
+      theme_axis_text_x +
       scale_y_continuous(breaks = breaks_width(25), limits = c(0, 100)) +
       labs(x = "",
            title = "Missing value patterns",
@@ -298,11 +309,12 @@ plot_missing <- function(df, percent=F){
       theme_bw() +
       theme(panel.grid.major.x = element_blank(),
             panel.grid.minor.x = element_blank()) +
+      theme_axis_text_x +
       scale_y_continuous(breaks = breaks_pretty(3)) +
       labs(x = "",
            title = "Missing value patterns",
            y = "num rows \n missing:") -> p_na_colomncount
   }
   
-  return(p_na_colomncount + plot_spacer() + p_na_pattern + p_na_rowcount + plot_layout(ncol=2, widths = c(5,1), heights = c(1,5)))
+  print(p_na_colomncount + plot_spacer() + p_na_pattern + p_na_rowcount + plot_layout(ncol=2, widths = c(5,1), heights = c(1,5)))
 }
