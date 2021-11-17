@@ -45,7 +45,7 @@ imdb %>%
   plot_missing(percent = T, long_axis = T)
 ```
 
-- 有超过60%的rows都出现了 endYear pattern的缺失，但是没关系
+- 有的超过60%的rows都出现了 endYear pattern的缺失，但是没关系
 
 
 
