@@ -264,7 +264,7 @@ plot_missing <- function(df, percent=F){
            x = "% row") -> p_na_rowcount
     
     missing_patterns_agg %>%
-      mutate(count = 100 * miss_rows_by_col / n_row) %>%
+      mutate(miss_rows_by_col = 100 * miss_rows_by_col / n_row) %>%
       ggplot() +
       aes(y = miss_rows_by_col,
           x = variable) +
