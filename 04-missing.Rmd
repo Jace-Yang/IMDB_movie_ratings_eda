@@ -41,7 +41,9 @@ SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
 ```{r,fig.width=11,fig.height=8}
 imdb %>%
   mutate_all( ~ifelse(. %in% SIGN_of_MISSING, NA, .) ) %>%
-  mutate_at("isAdult", ~ifelse(. %in% c('0', '1'), ., NA) ) %>%
+  mutate_at("isAdult", ~ifelse(. %in% c('0', '1'), ., NA) ) -> imdb
+
+imdb %>%
   plot_missing(percent = T, long_axis = T)
 ```
 
