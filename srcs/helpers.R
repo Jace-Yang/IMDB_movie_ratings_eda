@@ -1,4 +1,3 @@
-
 options(digits = 4, scipen = 999)
 knitr::opts_chunk$set(fig.align = 'center',
                       fig.width = 9.5, 

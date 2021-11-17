@@ -2,14 +2,32 @@
 
 ```{r, include=FALSE}
 source("srcs/helpers.R")
+load(file = "data/processing/imdb_sample.RData")
 ```
+
+
+## Missing patterns
+
+```{r}
+imdb %>%
+  head(100000) -> imdb_sample
+  
+imdb_sample %>%
+  mutate_all(~as.character(.)) %>%
+  pivot_longer(1:ncol(.)) %>%
+  group_by(name, value) %>%
+  summarise(nunique = n()) %>%
+  group_by(name) %>%
+  arrange(-nunique) %>%
+  slice(1:15)
+```
+
+
+## Missing plot
 
 ```{r,fig.width=7,fig.height=5}
-set.seed(5702)
-mycars <- mtcars
-mycars[1:25, "gear"] <- NA
-mycars[10:20, 3:5] <- NA
-for (i in 1:10) mycars[sample(32,1), sample(11,1)] <- NA
-plot_missing(mycars)
+imdb_sample %>%
+  mutate_all( ~ifelse(. %in% c('\\N', ""), NA, .) ) %>%
+  mutate_at("isAdult", ~ifelse(. %in% c('0', '1'), ., NA) ) %>%
+  plot_missing()
 ```
-

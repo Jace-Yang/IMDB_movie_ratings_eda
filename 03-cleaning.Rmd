@@ -1,1 +1,16 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 # Data transformation
+
+```{r, include=FALSE}
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+source("srcs/helpers.R")
+
+```
+
+
+
+
