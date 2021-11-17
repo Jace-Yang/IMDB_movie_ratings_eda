@@ -26,4 +26,3 @@ imdb %>% head(100000) -> imdb_sample
 save(imdb, file = "data/processing/imdb.RData")
 save(imdb_sample, file = "data/processing/imdb_sample.RData")
 ```
-
