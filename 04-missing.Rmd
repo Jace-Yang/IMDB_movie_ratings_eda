@@ -1,1 +1,16 @@
 # Missing values
+
+```{r, include=FALSE}
+source("srcs/helpers.R")
+```
+
+
+```{r,fig.width=7,fig.height=5}
+set.seed(5702)
+mycars <- mtcars
+mycars[1:25, "gear"] <- NA
+mycars[10:20, 3:5] <- NA
+for (i in 1:10) mycars[sample(32,1), sample(11,1)] <- NA
+plot_missing(mycars)
+```
+
