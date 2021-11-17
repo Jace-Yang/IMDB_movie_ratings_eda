@@ -4,7 +4,6 @@
 source("srcs/helpers.R")
 ```
 
-
 ```{r,fig.width=7,fig.height=5}
 set.seed(5702)
 mycars <- mtcars
