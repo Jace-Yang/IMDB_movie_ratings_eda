@@ -5,7 +5,6 @@ source("srcs/helpers.R")
 load(file = "data/processing/imdb_sample.RData")
 ```
 
-
 ## Missing patterns
 
 ```{r}
