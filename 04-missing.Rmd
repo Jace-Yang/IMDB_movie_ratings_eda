@@ -25,9 +25,9 @@ imdb_sample %>%
 
 ## Missing plot
 
-```{r,fig.width=7,fig.height=5}
+```{r,fig.width=13,fig.height=5}
 imdb_sample %>%
   mutate_all( ~ifelse(. %in% c('\\N', ""), NA, .) ) %>%
   mutate_at("isAdult", ~ifelse(. %in% c('0', '1'), ., NA) ) %>%
-  plot_missing()
+  plot_missing(percent = T)
 ```
