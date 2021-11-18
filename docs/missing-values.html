@@ -24,7 +24,7 @@
 <meta name="author" content="Jace Yang, Meggie Wen" />
 
 
-<meta name="date" content="2021-11-17" />
+<meta name="date" content="2021-11-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,8 +53,92 @@
 
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.20/datatables.js"></script>
+<link href="libs/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.11.3/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="libs/jszip-1.11.3/jszip.min.js"></script>
+<script src="libs/pdfmake-1.11.3/pdfmake.js"></script>
+<script src="libs/pdfmake-1.11.3/vfs_fonts.js"></script>
+<link href="libs/dt-ext-buttons-1.11.3/css/buttons.dataTables.min.css" rel="stylesheet" />
+<script src="libs/dt-ext-buttons-1.11.3/js/dataTables.buttons.min.js"></script>
+<script src="libs/dt-ext-buttons-1.11.3/js/buttons.html5.min.js"></script>
+<script src="libs/dt-ext-buttons-1.11.3/js/buttons.colVis.min.js"></script>
+<script src="libs/dt-ext-buttons-1.11.3/js/buttons.print.min.js"></script>
+<link href="libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet" />
+<script src="libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+<link href="libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="libs/selectize-0.12.0/selectize.min.js"></script>
+<link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
 
 
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -79,12 +163,20 @@
 <li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#missing-value-recognition"><i class="fa fa-check"></i><b>4.1</b> Missing value recognition</a></li>
-<li class="chapter" data-level="4.2" data-path="missing-values.html"><a href="missing-values.html#missing-plot"><i class="fa fa-check"></i><b>4.2</b> Missing plot</a></li>
+<li class="chapter" data-level="4.2" data-path="missing-values.html"><a href="missing-values.html#missing-by-columns-and-rows"><i class="fa fa-check"></i><b>4.2</b> Missing by columns and rows</a></li>
+<li class="chapter" data-level="4.3" data-path="missing-values.html"><a href="missing-values.html#missing-plot"><i class="fa fa-check"></i><b>4.3</b> Missing plot</a></li>
+<li class="chapter" data-level="4.4" data-path="missing-values.html"><a href="missing-values.html#heatmap"><i class="fa fa-check"></i><b>4.4</b> Heatmap</a></li>
+<li class="chapter" data-level="4.5" data-path="missing-values.html"><a href="missing-values.html#missing-by-other-attributes"><i class="fa fa-check"></i><b>4.5</b> Missing by other attributes</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a></li>
 <li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
 <li class="chapter" data-level="8" data-path="data-sources-1.html"><a href="data-sources-1.html"><i class="fa fa-check"></i><b>8</b> Data sources</a></li>
+<li class="chapter" data-level="9" data-path="data-transformation-1.html"><a href="data-transformation-1.html"><i class="fa fa-check"></i><b>9</b> Data transformation</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="data-transformation-1.html"><a href="data-transformation-1.html#missing-value-recognition-1"><i class="fa fa-check"></i><b>9.1</b> Missing value recognition</a></li>
+<li class="chapter" data-level="9.2" data-path="data-transformation-1.html"><a href="data-transformation-1.html#missing-plot-1"><i class="fa fa-check"></i><b>9.2</b> Missing plot</a></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -108,58 +200,157 @@
 <h1><span class="header-section-number">Chapter 4</span> Missing values</h1>
 <div id="missing-value-recognition" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Missing value recognition</h2>
+<p>First we need to understand how the NA is encoded in the dataset. So we calculate 15 most common value among each colomns:</p>
+<div id="htmlwidget-24ec203edbe51c466c8a" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-24ec203edbe51c466c8a">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1\" data-max=\"97156\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["Buttons"],"editable":{"target":"cell","disable":{"columns":null},"numeric":[2],"area":[]},"data":[["averageRating","averageRating","averageRating","averageRating","averageRating","averageRating","averageRating","averageRating","averageRating","averageRating","averageRating","averageRating","averageRating","averageRating","averageRating","endYear","endYear","endYear","endYear","endYear","endYear","endYear","endYear","endYear","endYear","endYear","endYear","endYear","endYear","endYear","genres","genres","genres","genres","genres","genres","genres","genres","genres","genres","genres","genres","genres","genres","genres","isAdult","isAdult","numVotes","numVotes","numVotes","numVotes","numVotes","numVotes","numVotes","numVotes","numVotes","numVotes","numVotes","numVotes","numVotes","numVotes","numVotes","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","originalTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","primaryTitle","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","runtimeMinutes","startYear","startYear","startYear","startYear","startYear","startYear","startYear","startYear","startYear","startYear","startYear","startYear","startYear","startYear","startYear","tconst","tconst","tconst","tconst","tconst","tconst","tconst","tconst","tconst","tconst","tconst","tconst","tconst","tconst","tconst","titleType","titleType","titleType","titleType","titleType","titleType","titleType","titleType","titleType","titleType"],["6.6","6.2","6.4","6.5","6.8","6.3","6","6.7","6.1","7","6.9","5.8","5.9","7.1","7.2","\\N","1997","1996","1995","1993","1998","1991","1988","1992","1994","1986","1985","1989","1990","1987","Drama","Comedy","Drama,Romance","Western","\\N","Comedy,Drama","Crime,Drama","Animation,Comedy,Family","Comedy,Romance","Adult","Documentary","Comedy,Short","Short","Comedy,Drama,Romance","Crime,Drama,Mystery","0","1","11","12","9","13","14","15","10","16","17","8","18","19","20","21","7","Pilot","Hamlet","Macbeth","Othello","Cinderella","Romeo and Juliet","Secrets","A Midsummer Night's Dream","Carmen","The Three Musketeers","Alice in Wonderland","Jack and the Beanstalk","Julius Caesar","King Lear","Oliver Twist","Pilot","Hamlet","Macbeth","Othello","Cinderella","Romeo and Juliet","The Three Musketeers","Desire","A Midsummer Night's Dream","Les Misérables","Mother","Secrets","Carmen","Julius Caesar","Kidnapped","\\N","90","100","95","30","60","85","92","96","88","93","91","80","94","87","1995","1996","1994","1997","1993","1992","1991","1989","1990","1988","1987","1985","1986","1984","1983","tt0000001","tt0000002","tt0000003","tt0000004","tt0000005","tt0000006","tt0000007","tt0000008","tt0000009","tt0000010","tt0000011","tt0000012","tt0000013","tt0000014","tt0000015","movie","short","tvMovie","tvSeries","video","tvEpisode","tvMiniSeries","tvShort","tvSpecial","videoGame"],[3896,3872,3872,3816,3804,3779,3630,3627,3552,3502,3402,3238,3145,3118,3004,95044,201,199,195,184,181,165,155,152,151,139,134,134,134,119,15480,9835,3018,2952,2727,2546,2248,2202,1777,1730,1672,1650,1419,1220,1147,97156,2844,1317,1296,1274,1251,1249,1238,1195,1140,1109,1076,1043,1029,1015,982,948,62,21,20,14,12,12,12,11,11,11,10,10,10,10,10,62,24,22,18,16,14,14,13,12,12,12,12,11,11,11,5808,5170,3178,3047,2759,2576,2369,2292,2126,2103,2081,2000,1910,1828,1789,3124,2995,2841,2743,2447,2307,2224,2204,2126,2090,1981,1844,1812,1727,1667,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,71554,9745,7344,5803,2151,2084,1128,93,58,40]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>name<\/th>\n      <th>value<\/th>\n      <th>nunique<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"autoWidth":true,"digits":2,"pageLength":5,"dom":"Blfrtip","initComplete":"function(settings, json) {\n$(this.api().table().header()).css({'background-color': '#ffffff', 'color': '#000000'});\n}","search":{"regex":true,"caseInsensitive":false},"buttons":[{"extend":"collection","buttons":["csv","excel","pdf"],"text":"Download"},{"extend":"copy","buttons":"copy","title":null,"text":"Copy"},{"extend":"print","buttons":"print","text":"Print"}],"lengthMenu":[10,25,50,200,500],"columnDefs":[{"className":"dt-right","targets":2}],"order":[],"orderClasses":false,"orderCellsTop":true}},"evals":["options.initComplete"],"jsHooks":[]}</script>
 <ul>
-<li>First we need to understand how the NA is encoded in the dataset. So we calculate the most common value among each colomns:</li>
+<li>Apparently, <code>\N</code>, for example, is likely to be a tag for missing value.</li>
 </ul>
-<pre><code>## # A tibble: 446 × 3
-## # Groups:   name [33]
-##    name          value nunique
-##    &lt;chr&gt;         &lt;chr&gt;   &lt;int&gt;
-##  1 averageRating 6.4       142
-##  2 averageRating 6.2       136
-##  3 averageRating 6.6       132
-##  4 averageRating 7         132
-##  5 averageRating 6.7       123
-##  6 averageRating 7.3       119
-##  7 averageRating 6.5       118
-##  8 averageRating 6.1       117
-##  9 averageRating 6.3       116
-## 10 averageRating 6.8       115
-## # … with 436 more rows</code></pre>
-<ul>
-<li>Apparently, <code>\N</code> is likely to be a tag for missing value.</li>
-</ul>
-<pre><code>## # A tibble: 4 × 11
-##   tconst     averageRating numVotes titleType primaryTitle originalTitle isAdult
-##   &lt;chr&gt;              &lt;dbl&gt;    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;           &lt;int&gt;
-## 1 tt0138704            7.4   174798 movie     Pi           Pi                  0
-## 2 tt13208888           8.6        5 tvEpisode Pi           Pi                  0
-## 3 tt2731446            8.9        8 short     Pi           Pi                  0
-## 4 tt5694266            4         24 short     Pi           Pi                  0
-## # … with 4 more variables: startYear &lt;chr&gt;, endYear &lt;chr&gt;,
-## #   runtimeMinutes &lt;chr&gt;, genres &lt;chr&gt;</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="missing-values.html#cb1-1" aria-hidden="true" tabindex="-1"></a>SIGN_of_MISSING <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;</span><span class="sc">\\</span><span class="st">N&#39;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;[]&quot;</span>, <span class="st">&quot; #N/A&quot;</span>, <span class="st">&quot;#N/A&quot;</span>)</span></code></pre></div>
 </div>
-<div id="missing-plot" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Missing plot</h2>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-11-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<div id="missing-by-columns-and-rows" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Missing by columns and rows</h2>
+<p>We first take a glance of the missingness.</p>
 <ul>
-<li>有超过60%的rows都出现了 endYear pattern的缺失，但是没关系</li>
+<li>By colomns:</li>
 </ul>
-<pre><code>## # A tibble: 1,195,712 × 11
-##    tconst    averageRating numVotes titleType primaryTitle originalTitle isAdult
-##    &lt;chr&gt;             &lt;dbl&gt;    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;           &lt;int&gt;
-##  1 tt0000001           5.7     1836 short     Carmencita   Carmencita          0
-##  2 tt0000002           6        236 short     Le clown et… Le clown et …       0
-##  3 tt0000003           6.5     1597 short     Pauvre Pier… Pauvre Pierr…       0
-##  4 tt0000004           6        153 short     Un bon bock  Un bon bock         0
-##  5 tt0000005           6.2     2412 short     Blacksmith … Blacksmith S…       0
-##  6 tt0000006           5.2      158 short     Chinese Opi… Chinese Opiu…       0
-##  7 tt0000007           5.4      755 short     Corbett and… Corbett and …       0
-##  8 tt0000008           5.5     1982 short     Edison Kine… Edison Kinet…       0
-##  9 tt0000009           5.9      191 short     Miss Jerry   Miss Jerry          0
-## 10 tt0000010           6.9     6606 short     Leaving the… La sortie de…       0
-## # … with 1,195,702 more rows, and 4 more variables: startYear &lt;chr&gt;,
-## #   endYear &lt;chr&gt;, runtimeMinutes &lt;chr&gt;, genres &lt;chr&gt;</code></pre>
+<pre><code>##         tconst  averageRating       numVotes      titleType   primaryTitle 
+##              0              0              0              0              0 
+##  originalTitle        isAdult      startYear        endYear runtimeMinutes 
+##              0              0              0              0              0 
+##         genres 
+##              0</code></pre>
+<ul>
+<li><p>7 colomns are complete.</p></li>
+<li><p><code>endYear</code> and <code>runtimeMinutes</code> seem to be a severely missing columns.</p></li>
+<li><p>By rows: we pick the 50 most popularly voted pieces of work, and check their missingness:</p></li>
+</ul>
+<pre><code>##   The Lord of the Rings: The Return of the King 
+##                                               0 
+##                                Django Unchained 
+##                                               0 
+##                            Inglourious Basterds 
+##                                               0 
+##                                Schindler&#39;s List 
+##                                               0 
+##                                  The Green Mile 
+##                                               0 
+##                                  Shutter Island 
+##                                               0 
+##                          The Godfather: Part II 
+##                                               0 
+##                         Léon: The Professional 
+##                                               0 
+##                              American History X 
+##                                               0 
+##                               Kill Bill: Vol. 1 
+##                                               0 
+##                                         WALL·E 
+##                                               0 
+##                          Avengers: Infinity War 
+##                                               0 
+##                              Mad Max: Fury Road 
+##                                               0 
+##   Indiana Jones and the Raiders of the Lost Ark 
+##                                               0 
+##      Star Wars: Episode VII - The Force Awakens 
+##                                               0 
+##    Harry Potter and the Deathly Hallows: Part 2 
+##                                               0 
+##                                The Intouchables 
+##                                               0 
+##                                The Big Lebowski 
+##                                               0 
+##                        The Grand Budapest Hotel 
+##                                               0 
+##                                         Amélie 
+##                                               0 
+##                               Kill Bill: Vol. 2 
+##                                               0 
+##                         Silver Linings Playbook 
+##                                               0 
+##              Batman v Superman: Dawn of Justice 
+##                                               0 
+##                                      District 9 
+##                                               0 
+##                Once Upon a Time... In Hollywood 
+##                                               0 
+##                                Edge of Tomorrow 
+##                                               0 
+##                            The Bourne Ultimatum 
+##                                               0 
+##                                  Jurassic World 
+##                                               0 
+## Birdman or (The Unexpected Virtue of Ignorance) 
+##                                               0 
+##                                      Life of Pi 
+##                                               0 
+##                                            Argo 
+##                                               0 
+##         Star Wars: Episode VIII - The Last Jedi 
+##                                               0 
+##                               The Hateful Eight 
+##                                               0 
+##                                        Superbad 
+##                                               0 
+##                                  Ocean&#39;s Eleven 
+##                                               0 
+##                                        Kick-Ass 
+##                                               0 
+##                                  21 Jump Street 
+##                                               0 
+##                                  True Detective 
+##                                               0 
+##                                      Deadpool 2 
+##                                               0 
+##                                   Despicable Me 
+##                                               0 
+##                  Rise of the Planet of the Apes 
+##                                               0 
+##                                The Great Gatsby 
+##                                               0 
+##    Harry Potter and the Deathly Hallows: Part 1 
+##                                               0 
+##                                              It 
+##                                               0 
+##       The Hobbit: The Battle of the Five Armies 
+##                                               0 
+##                               Bohemian Rhapsody 
+##                                               0 
+##                                        Hot Fuzz 
+##                                               0 
+##                 The Perks of Being a Wallflower 
+##                                               0 
+##                            The Hangover Part II 
+##                                               0 
+##                        The Pursuit of Happyness 
+##                                               0</code></pre>
+<ul>
+<li><p>Only 1 and 0 colomn is missing in these rows. To double check that:</p></li>
+<li><p>By rows &amp; colomns:</p></li>
+</ul>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-13-1.png" width="1056" style="display: block; margin: auto;" />
+<strong>Observations:</strong></p>
+<p>Nothing but endYear is missing frequently.
+We can infer that:
+1. The most popular works have relatively complete information available to public
+2. Movies are being voted much more than TV series, since only TV series has endYear as an attribute.</p>
+</div>
+<div id="missing-plot" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Missing plot</h2>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-14-1.png" width="1056" style="display: block; margin: auto;" /></p>
+</div>
+<div id="heatmap" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Heatmap</h2>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-15-1.png" width="912" style="display: block; margin: auto;" />
+<img src="finalproj_files/figure-html/unnamed-chunk-16-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p><strong>Observations:</strong>
+ggtile() may not work very well this time because most of the values in our dataset are discrete and non-numeric.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-17-1.png" width="1056" style="display: block; margin: auto;" /></p>
+</div>
+<div id="missing-by-other-attributes" class="section level2" number="4.5">
+<h2><span class="header-section-number">4.5</span> Missing by other attributes</h2>
+<p>We have already seen from <em>missing by column</em> that only four of the attributes have missing values. Therefore, it may not be meaningful to compare the missing values by year, rating, or votes, etc.</p>
 
 </div>
 </div>
@@ -200,7 +391,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/jace-yang/EDAV_FINAL/edit/main/04-missing.Rmd",
+"link": "https://github.com/jace-yang/IMDB_movie_ratings_eda/edit/main/04-missing.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -208,7 +399,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/jace-yang/EDAV_FINAL/blob/main/04-missing.Rmd",
+"link": "https://github.com/jace-yang/IMDB_movie_ratings_eda/blob/main/04-missing.Rmd",
 "text": null
 },
 "download": null,

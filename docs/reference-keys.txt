@@ -9,3 +9,12 @@ missing-patterns
 missing-plot
 missing-value-recognition
 data-sources-1
+data-transformation-1
+missing-value-recognition-1
+missing-plot-1
+missing-by-column
+rearranging-the-dataset
+missing-by-rows
+heatmap
+missing-by-other-attributes
+missing-by-columns-and-rows

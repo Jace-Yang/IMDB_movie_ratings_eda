@@ -8,9 +8,6 @@ knitr::opts_chunk$set(fig.align = 'center',
                       #echo = F,
                       eval = T)
 
-# Set working dictionary where this rmd file is.
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-
 # Basics
 if(!require(dplyr)) install.packages("dplyr")
 if(!require(tibble)) install.packages("tibble")
@@ -28,6 +25,10 @@ if(!require(forcats)) install.packages("forcats")
 if(!require(stringr)) install.packages("stringr")
 if(!require(data.table)) install.packages("data.table")
 
+# Missing value
+if(!require(mi)) install.packages("mi")
+
+# Plot
 if(!require(ggpubr)) install.packages("ggpubr")
 if(!require(PupillometryR)) install.packages("PupillometryR")
 if(!require(ggridges)) install.packages("ggridges")
@@ -46,6 +47,10 @@ if(!require(openintro)) install.packages("openintro")
 # pair plot
 if(!require(gridGraphics)) install.packages("gridGraphics")
 if(!require(gridExtra)) install.packages("gridExtra")
+
+# DT table of html format
+if(!require(DT)) install.packages("DT")
+if(!require(htmlwidgets)) install.packages("htmlwidgets")
 
 # set up ggplot2 helper variable
 JACE_COLOR <- c("#FF5A5F", "#FFB400", "#007A87", 
@@ -186,7 +191,8 @@ axis_unit_scaler_1 <- function(n, digits = 1){
   return(labels)
 }
 
-plot_missing <- function(df, percent=F, long_axis = F){
+plot_missing <- function(df, percent = F, long_axis = F){
+  
   n_row = nrow(df)
   variables = colnames(df)
   
@@ -246,12 +252,13 @@ plot_missing <- function(df, percent=F, long_axis = F){
                fill = is_na)) +
     geom_tile(color = "white", show.legend = FALSE) + 
     geom_text(aes(label=na_text),
-              size = ifelse(nrow(missing_patterns) > 20, 4.5, 6.5),
-              color = "gray25",
+              size = ifelse(nrow(missing_patterns) < 10, 6,
+                            ifelse(nrow(missing_patterns) < 20, 5, 4)),
+              color = "gray22",
               na.rm = TRUE) +
-    scale_fill_manual(values = c("na" = "gray",
-                                 "not_na" = "#85C1E9", 
-                                 "not_na_and_complete" = "#D6EAF8")) +
+    scale_fill_manual(values = c("na" = "#6166B3",
+                                 "not_na" = "#cbcbcb", 
+                                 "not_na_and_complete" = "#b3b3b3")) +
     theme_bw() +
     theme_axis_text_x +
     labs(x = "variable",
@@ -261,12 +268,15 @@ plot_missing <- function(df, percent=F, long_axis = F){
   
   if(percent){
     missing_patterns %>%
-      mutate(count = 100 * count /n_row) %>%
+      mutate(count = 100 * count /n_row,
+             is_complete = ifelse(is_complete,"1","0")) %>%
       ggplot() +
       aes(y = fct_rev(missing_pattern),
-          x = count) +
-      geom_col(fill = "#8caef1AA") +
-      scale_x_continuous(breaks = breaks_width(25), limits = c(0, 100)) +
+          x = count,
+          fill = is_complete) +
+      geom_col() +
+      scale_x_continuous(breaks = breaks_width(25), limits = c(0, 100), expand = c(0, 0)) +
+      scale_fill_manual(values = c("1" = "#6f94e6", "0" = "#6f94e6AA"), guide="none") +
       theme_bw() + 
       theme(panel.grid.major.y = element_blank(),
             panel.grid.minor.y = element_blank()) +
@@ -283,18 +293,21 @@ plot_missing <- function(df, percent=F, long_axis = F){
       theme(panel.grid.major.x = element_blank(),
             panel.grid.minor.x = element_blank()) +
       theme_axis_text_x +
-      scale_y_continuous(breaks = breaks_width(25), limits = c(0, 100)) +
+      scale_y_continuous(breaks = breaks_width(25), limits = c(0, 100), expand = c(0, 0)) +
       labs(x = "",
            title = "Missing value patterns",
            y = "% rows \n missing:") -> p_na_colomncount
     
   }else{
     missing_patterns %>%
+      mutate(is_complete = ifelse(is_complete,"1","0")) %>%
       ggplot() +
       aes(y = fct_rev(missing_pattern),
-          x = count) +
-      geom_col(fill = "#8caef1AA") +
-      scale_x_continuous(breaks = breaks_pretty(3)) +
+          x = count,
+          fill = is_complete) +
+      geom_col() +
+      scale_x_continuous(breaks = breaks_pretty(3), expand = c(0, 0)) +
+      scale_fill_manual(values = c("1" = "#6f94e6", "0" = "#6f94e6AA"), guide="none") +
       theme_bw() + 
       theme(panel.grid.major.y = element_blank(),
             panel.grid.minor.y = element_blank()) +
@@ -310,11 +323,58 @@ plot_missing <- function(df, percent=F, long_axis = F){
       theme(panel.grid.major.x = element_blank(),
             panel.grid.minor.x = element_blank()) +
       theme_axis_text_x +
-      scale_y_continuous(breaks = breaks_pretty(3)) +
+      scale_y_continuous(breaks = breaks_pretty(3), expand = c(0, 0)) +
       labs(x = "",
            title = "Missing value patterns",
            y = "num rows \n missing:") -> p_na_colomncount
   }
   
   print(p_na_colomncount + plot_spacer() + p_na_pattern + p_na_rowcount + plot_layout(ncol=2, widths = c(5,1), heights = c(1,5)))
+}
+
+
+get_DT <-function(df, rownames = F, default_show = 10){
+  df %>%
+    
+    DT::datatable(
+      extensions = 'Buttons', 
+      class = 'display',
+      rownames = rownames,
+      
+      editable = "cell",
+      filter = 'top',
+      options = list(autoWidth = T,
+                     digits=2,
+                     pageLength = default_show,
+                     dom = 'Blfrtip',
+                     
+                     initComplete = JS(
+                       "function(settings, json) {",
+                       "$(this.api().table().header()).css({'background-color': '#ffffff', 'color': '#000000'});",
+                       "}"),
+                     
+                     # language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Chinese.json'),
+
+                     search = list(regex = TRUE, caseInsensitive = FALSE),
+                     
+                     buttons = list(
+                       
+                       list(
+                         extend = 'collection',
+                         buttons = c('csv', 'excel', 'pdf'),
+                         text = 'Download'),
+                       
+                       list(
+                         extend = 'copy',
+                         buttons = c('copy'),
+                         title = NULL,
+                         text = 'Copy'),
+                       
+                       list(
+                         extend = 'print',
+                         buttons = c('print'),
+                         text = 'Print')),
+                     
+                     lengthMenu = c(10, 25, 50, 200, 500)))  -> DTtable
+  return(DTtable)
 }
