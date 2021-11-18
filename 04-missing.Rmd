@@ -142,11 +142,12 @@ ggplot(aes(x = fct_reorder(key, -missing2, sum), y = fct_reorder(id, -missing2, 
   scale_fill_gradient2(low = "blue", mid = "white", high ="yellow", na.value = "black") + theme_bw()
 ```
 
-## Inight about why NA happens
+## Missing by Other Attributes
 
-We have already seen from *missing by column* that only four of the attributes have missing values. Therefore, it may not be meaningful to compare the missing values by year, rating, or votes, etc.
+### Missing by Years
 
-### 
+  - We are now investigating the missing values of runtime and genres by each year.
+  - Since the number of new movies vary a lot by years, we take a look into the missing ratios rather than values.
 
 ```{r}
 imdb %>%
@@ -156,31 +157,35 @@ imdb %>%
             miss_genres = sum(ifelse(is.na(genres), 1, 0)) / total_movie,
             miss_runtime = sum(ifelse(is.na(runtimeMinutes), 1, 0)) / total_movie)  -> imdb_na_by_startyear
 
-imdb_na_by_startyear %>%
+imdb_na_by_startyear <- subset(imdb_na_by_startyear, as.numeric(startYear) < 2022)
 
+imdb_na_by_startyear %>%
+ggplot() +
+  aes(x = as.numeric(startYear),
+      y = total_movie) +
+  xlab("startYear") +
+  ylab("Total Movies") +
+  geom_area(fill = "#6166B388") +
+  theme_jace 
+
+imdb_na_by_startyear %>%
 ggplot() +
   aes(x = as.numeric(startYear),
       y = miss_runtime) +
+  xlab("startYear") +
   geom_area(fill = "#6166B388") +
   theme_jace
 
 imdb_na_by_startyear %>%
-
 ggplot() +
   aes(x = as.numeric(startYear),
       y = miss_genres) +
   geom_area(fill = "#6166B388") +
-  theme_jace 
-  
-
-imdb_na_by_startyear %>%
-
-ggplot() +
-  aes(x = as.numeric(startYear),
-      y = total_movie) +
-  geom_area(fill = "#6166B388") +
+  xlab("startYear") +
   theme_jace 
 ```
+
+### Missing by Genres
 
 ```{r}
 imdb %>%
@@ -190,7 +195,6 @@ imdb %>%
   group_by(genres) %>%
   summarise(total_movie = n(),
             miss_runtime = sum(miss_min))  -> imdb_na_by_genres
-
 imdb_na_by_genres %>%
   mutate(genres=fct_reorder(genres, miss_runtime)) %>%
   
@@ -203,4 +207,10 @@ ggplot() +
   only_x +
   coord_flip()
 ```
+
+
+## Inight about why NA happens
+
+We have already seen from *missing by column* that only four of the attributes have missing values. Therefore, it may not be meaningful to compare the missing values by rating or votes, etc.
+
 
