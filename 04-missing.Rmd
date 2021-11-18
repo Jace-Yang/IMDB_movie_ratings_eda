@@ -187,6 +187,8 @@ ggplot() +
 
 ### Missing by Genres
 
+  - We are now investigating the missing values of runtime by each genre
+  
 ```{r}
 imdb %>%
   select(genres, runtimeMinutes) %>%
@@ -211,6 +213,7 @@ ggplot() +
 
 ## Inight about why NA happens
 
-We have already seen from *missing by column* that only four of the attributes have missing values. Therefore, it may not be meaningful to compare the missing values by rating or votes, etc.
+- We have already seen from *missing by column* that only four of the attributes have missing values. Therefore, it may not be meaningful to compare the missing values by rating or votes, etc.
+- Missing patterns vary by types. For example, movies do not have `endYear` and talk shows do not have `runtimeMinutes` or `genres`.
 
 
