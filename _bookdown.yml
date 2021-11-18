@@ -1,8 +1,8 @@
 book_filename: "finalproj"
 output_dir: docs
 delete_merged_file: true
-edit: https://github.com/jace-yang/EDAV_FINAL/edit/main/%s
-view: https://github.com/jace-yang/EDAV_FINAL/blob/main/%s
+edit: https://github.com/jace-yang/IMDB_movie_ratings_eda/edit/main/%s
+view: https://github.com/jace-yang/IMDB_movie_ratings_eda/blob/main/%s
 language:
   ui:
     chapter_name: "Chapter "
