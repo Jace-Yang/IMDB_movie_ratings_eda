@@ -61,22 +61,20 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source("srcs/helpers.R")
 ```
 
-```{r, eval=FALSE}
-save(imdb, file = "data/processing/imdb.RData")
-save(imdb_sample, file = "data/processing/imdb_sample.RData")
-```
+
 # Missing values
 
 ```{r, include=FALSE}
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # set to local directory
 source("srcs/helpers.R")
 load(file = "data/processing/imdb_sample.RData")
 load(file = "data/processing/imdb.RData")
 ```
 
+
 ## Missing value recognition
 
-- First we need to understand how the NA is encoded in the dataset. So we calculate the most common value among each colomns:
+First we need to understand how the NA is encoded in the dataset. So we calculate 15 most common value among each colomns:
 
 ```{r}
 imdb_sample %>%
@@ -86,105 +84,128 @@ imdb_sample %>%
   summarise(nunique = n()) %>%
   group_by(name) %>%
   arrange(-nunique) %>%
-  slice(1:15)
+  slice(1:15) %>%
+  get_DT(default_show = 5)
 ```
 
-- Apparently, `\N` is likely to be a tag for missing value.
+- Apparently, `\N`, for example, is likely to be a tag for missing value.
 
-```{r}
+```r
 SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
 ```
 
-
-
-## Missing plot
-
-```{r,fig.width=11,fig.height=8}
+```{r}
+SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
 imdb %>%
   mutate_all( ~ifelse(. %in% SIGN_of_MISSING, NA, .) ) %>%
   mutate_at("isAdult", ~ifelse(. %in% c('0', '1'), ., NA) ) -> imdb
-imdb %>%
-  plot_missing(percent = T, long_axis = T)
 ```
 
-# Missing by column
+
+
+## Missing by columns and rows
+
+We first take a glance of the missingness.
+
+- By colomns: 
+
 ```{r}
 colSums(is.na(imdb)) %>%
   sort(decreasing = TRUE)
 ```
 
-#Rearranging the dataset
+  - 7 colomns are complete.
+  - `endYear` and `runtimeMinutes` seem to be a severely missing columns.
 
-1. Pick the 50 most popular pieces of work
-2. Make primaryTitle the index
+- By rows: we pick the 50 most popularly voted pieces of work, and check their missingness:
 
 ```{r}
-imdb_bytitle <- imdb %>% 
+imdb %>% 
   mutate(startYear = as.numeric(startYear)) %>%
   arrange(-startYear) %>%
   group_by(primaryTitle) %>%
-  slice(1)
-imdb_mostvotes <- imdb_bytitle[order(-imdb_bytitle$numVotes),][1:50,]
-imdb_mostvotes <- column_to_rownames(imdb_mostvotes,"primaryTitle")
+  slice(1) %>% ungroup %>%
+  arrange(-numVotes) %>%
+  slice(1:50) %>%
+  column_to_rownames("primaryTitle") -> imdb_mostvotes
 ```
 
-# Missing by rows
 ```{r}
 rowSums(is.na(imdb_mostvotes)) %>%
-  sort(decreasing = TRUE)
+  sort(decreasing = TRUE) 
 ```
 
+  - Only 1 and 0 colomn is missing in these rows. To double check that:
 
-```{r,fig.width=11,fig.height=8}
-library(tidyverse)
+- By rows & colomns: 
 
+```{r,fig.width=7,fig.height=9}
 tidyimdb <- imdb_mostvotes %>% 
     rownames_to_column("id") %>% 
     gather(key, value, -id) %>% 
     mutate(missing = ifelse(is.na(value), "yes", "no"))
-
 ggplot(tidyimdb, aes(x = key, y = fct_rev(id), fill = missing)) +
   geom_tile(color = "white") + 
-  ggtitle("Missing values by rows & columns") +
   scale_fill_viridis_d() + 
-  theme_bw()
+  theme_bw() +
+  labs(y = "Movie",
+       x = "Variable",
+       title = "Missing values by rows & columns") +
+  theme_jace
 ```
-**Observations:** 
 
-Nothing but endYear is missing frequently. 
-We can infer that:
-1. The most popular works have relatively complete information available to public
-2. Movies are being voted much more than TV series, since only TV series has endYear as an attribute. 
+  - **Observations:** Nothing but endYear is missing frequently. We can infer that:
+  
+    1. The most popular works have relatively complete information available to public
+    
+    2. Movies are being voted much more than TV series, since only TV series has `endYear` as an attribute. 
 
-#Heatmap
+
+## Missing plot
+
+### Missing pattern summary
+
+Then we chan the missing value plot we coded from the PSet 4.
+
+```{r,fig.width=11,fig.height=8}
+imdb %>%
+  plot_missing(percent = T, long_axis = T)
+```
+
+The most prevalent missing pattern is indeed the missing endYear, accounting for about 70% of the cases, which is driven by the fact that the `endYear` variable is missing in nearly all of the samples. In addition, `runtimeMinutes` and `endYear` are frequently absent simultaneously, whereas `genres` and `startYear` are missing in minor amounts.
+
+
+### Heatmap
 
 ```{r}
-library(mi)
-imdb_bytitle <- column_to_rownames(imdb_bytitle,"primaryTitle")
-x <- missing_data.frame(imdb_bytitle)
+x <- missing_data.frame(imdb_mostvotes)
 image(x)
 ```
+
 ```{r,fig.width=11,fig.height=8}
 tidyimdb2 <- tidyimdb %>% mutate(value2 = as.numeric(value))
 ggplot(tidyimdb2, aes(x = key, y = fct_rev(id), fill = value2)) +
   geom_tile(color = "white") + 
   scale_fill_gradient(low = "grey80", high = "red", na.value = "black") + theme_bw()
 ```
-**Observations:**
-ggtile() may not work very well this time because most of the values in our dataset are discrete and non-numeric.
+
+  - **Observations:** ggtile() may not work very well this time because most of the values in our dataset are discrete and non-numeric.
 
 ```{r,fig.width=11,fig.height=8}
-test <- test %>% 
-  mutate(missing2 = ifelse(missing == "yes", 1, 0))
-
-ggplot(test, aes(x = fct_reorder(key, -missing2, sum), y = fct_reorder(id, -missing2, sum), fill = value2)) +
+tidyimdb2 %>%
+  mutate(missing2 = ifelse(missing == "yes", 1, 0)) %>%
+ggplot(aes(x = fct_reorder(key, -missing2, sum), y = fct_reorder(id, -missing2, sum), fill = value2)) +
   geom_tile(color = "white") + 
   scale_fill_gradient2(low = "blue", mid = "white", high ="yellow", na.value = "black") + theme_bw()
 ```
 
-#Missing by other attributes
 
-We have already seen from *missing by column* that only four of the attributes have missing values. Therefore, it may not be meaningful to compare the missing values by year, rating, or votes, etc.
+## Missing by Other Attributes
+
+### Missing by Years
+
+  - We are now investigating the missing values of runtime and genres by each year.
+  - Since the number of new movies vary a lot by years, we take a look into the missing ratios rather than values.
 
 ```{r}
 imdb %>%
@@ -194,27 +215,35 @@ imdb %>%
             miss_genres = sum(ifelse(is.na(genres), 1, 0)) / total_movie,
             miss_runtime = sum(ifelse(is.na(runtimeMinutes), 1, 0)) / total_movie)  -> imdb_na_by_startyear
 
-imdb_na_by_startyear <- subset(imdb_na_by_startyear, as.numeric(startYear)<2022)
+imdb_na_by_startyear <- subset(imdb_na_by_startyear, as.numeric(startYear) < 2022)
+
+imdb_na_by_startyear %>%
+ggplot() +
+  aes(x = as.numeric(startYear),
+      y = total_movie) +
+  xlab("startYear") +
+  ylab("Total Movies") +
+  geom_area(fill = "#6166B388") +
+  theme_jace 
+
 imdb_na_by_startyear %>%
 ggplot() +
   aes(x = as.numeric(startYear),
       y = miss_runtime) +
+  xlab("startYear") +
   geom_area(fill = "#6166B388") +
   theme_jace
+
 imdb_na_by_startyear %>%
 ggplot() +
   aes(x = as.numeric(startYear),
       y = miss_genres) +
   geom_area(fill = "#6166B388") +
-  theme_jace 
-  
-imdb_na_by_startyear %>%
-ggplot() +
-  aes(x = as.numeric(startYear),
-      y = total_movie) +
-  geom_area(fill = "#6166B388") +
+  xlab("startYear") +
   theme_jace 
 ```
+
+### Missing by Genres
 
 ```{r}
 imdb %>%
@@ -236,6 +265,11 @@ ggplot() +
   only_x +
   coord_flip()
 ```
+
+
+## Inight about why NA happens
+
+We have already seen from *missing by column* that only four of the attributes have missing values. Therefore, it may not be meaningful to compare the missing values by rating or votes, etc.
 
 
 
