@@ -145,3 +145,62 @@ ggplot(aes(x = fct_reorder(key, -missing2, sum), y = fct_reorder(id, -missing2, 
 ## Inight about why NA happens
 
 We have already seen from *missing by column* that only four of the attributes have missing values. Therefore, it may not be meaningful to compare the missing values by year, rating, or votes, etc.
+
+### 
+
+```{r}
+imdb %>%
+  select(startYear, genres, runtimeMinutes) %>%
+  group_by(startYear) %>%
+  summarise(total_movie = n(),
+            miss_genres = sum(ifelse(is.na(genres), 1, 0)) / total_movie,
+            miss_runtime = sum(ifelse(is.na(runtimeMinutes), 1, 0)) / total_movie)  -> imdb_na_by_startyear
+
+imdb_na_by_startyear %>%
+
+ggplot() +
+  aes(x = as.numeric(startYear),
+      y = miss_runtime) +
+  geom_area(fill = "#6166B388") +
+  theme_jace
+
+imdb_na_by_startyear %>%
+
+ggplot() +
+  aes(x = as.numeric(startYear),
+      y = miss_genres) +
+  geom_area(fill = "#6166B388") +
+  theme_jace 
+  
+
+imdb_na_by_startyear %>%
+
+ggplot() +
+  aes(x = as.numeric(startYear),
+      y = total_movie) +
+  geom_area(fill = "#6166B388") +
+  theme_jace 
+```
+
+```{r}
+imdb %>%
+  select(genres, runtimeMinutes) %>%
+  mutate(miss_min = ifelse(is.na(runtimeMinutes), 1, 0)) %>%
+  separate_rows(genres) %>%
+  group_by(genres) %>%
+  summarise(total_movie = n(),
+            miss_runtime = sum(miss_min))  -> imdb_na_by_genres
+
+imdb_na_by_genres %>%
+  mutate(genres=fct_reorder(genres, miss_runtime)) %>%
+  
+ggplot() +
+   aes(x = genres,
+       y = miss_runtime) +
+  geom_col(fill = "#6166B388") +
+  theme_jace +
+  scale_y_continuous(labels = percent_format()) +
+  only_x +
+  coord_flip()
+```
+

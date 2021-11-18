@@ -20,3 +20,4 @@ missing-by-other-attributes
 missing-by-columns-and-rows
 heatmap-1
 inight-about-why-na-happens
+missing-pattern-summary
