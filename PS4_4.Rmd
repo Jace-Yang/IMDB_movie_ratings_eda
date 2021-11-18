@@ -1,0 +1,148 @@
+---
+title: "PS4_4"
+author: "Meggie"
+date: "11/17/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data transformation
+
+```{r, include=FALSE}
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+source("srcs/helpers.R")
+```
+
+```{r, eval=FALSE}
+save(imdb, file = "data/processing/imdb.RData")
+save(imdb_sample, file = "data/processing/imdb_sample.RData")
+```
+# Missing values
+
+```{r, include=FALSE}
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+source("srcs/helpers.R")
+load(file = "data/processing/imdb_sample.RData")
+load(file = "data/processing/imdb.RData")
+```
+
+## Missing value recognition
+
+- First we need to understand how the NA is encoded in the dataset. So we calculate the most common value among each colomns:
+
+```{r}
+imdb_sample %>%
+  mutate_all(~as.character(.)) %>%
+  pivot_longer(1:ncol(.)) %>%
+  group_by(name, value) %>%
+  summarise(nunique = n()) %>%
+  group_by(name) %>%
+  arrange(-nunique) %>%
+  slice(1:15)
+```
+
+- Apparently, `\N` is likely to be a tag for missing value.
+
+```{r}
+SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
+```
+
+
+
+## Missing plot
+
+```{r,fig.width=11,fig.height=8}
+imdb %>%
+  mutate_all( ~ifelse(. %in% SIGN_of_MISSING, NA, .) ) %>%
+  mutate_at("isAdult", ~ifelse(. %in% c('0', '1'), ., NA) ) -> imdb
+imdb %>%
+  plot_missing(percent = T, long_axis = T)
+```
+
+# Missing by column
+```{r}
+colSums(is.na(imdb)) %>%
+  sort(decreasing = TRUE)
+```
+
+#Rearranging the dataset
+
+1. Pick the 50 most popular pieces of work
+2. Make primaryTitle the index
+
+```{r}
+imdb_bytitle <- imdb %>% 
+  mutate(startYear = as.numeric(startYear)) %>%
+  arrange(-startYear) %>%
+  group_by(primaryTitle) %>%
+  slice(1)
+imdb_mostvotes <- imdb_bytitle[order(-imdb_bytitle$numVotes),][1:50,]
+imdb_mostvotes <- column_to_rownames(imdb_mostvotes,"primaryTitle")
+```
+
+# Missing by rows
+```{r}
+rowSums(is.na(imdb_mostvotes)) %>%
+  sort(decreasing = TRUE)
+```
+
+
+```{r,fig.width=11,fig.height=8}
+library(tidyverse)
+
+tidyimdb <- imdb_mostvotes %>% 
+    rownames_to_column("id") %>% 
+    gather(key, value, -id) %>% 
+    mutate(missing = ifelse(is.na(value), "yes", "no"))
+
+ggplot(tidyimdb, aes(x = key, y = fct_rev(id), fill = missing)) +
+  geom_tile(color = "white") + 
+  ggtitle("Missing values by rows & columns") +
+  scale_fill_viridis_d() + 
+  theme_bw()
+```
+**Observations:** 
+
+Nothing but endYear is missing frequently. 
+We can infer that:
+1. The most popular works have relatively complete information available to public
+2. Movies are being voted much more than TV series, since only TV series has endYear as an attribute. 
+
+#Heatmap
+
+```{r}
+library(mi)
+x <- missing_data.frame(imdb_mostvotes)
+image(x)
+```
+```{r,fig.width=11,fig.height=8}
+tidyimdb2 <- tidyimdb %>% mutate(value2 = as.numeric(value))
+ggplot(tidyimdb2, aes(x = key, y = fct_rev(id), fill = value2)) +
+  geom_tile(color = "white") + 
+  scale_fill_gradient(low = "grey80", high = "red", na.value = "black") + theme_bw()
+```
+**Observations:**
+ggtile() may not work very well this time because most of the values in our dataset are discrete and non-numeric.
+
+```{r,fig.width=11,fig.height=8}
+test <- test %>% 
+  mutate(missing2 = ifelse(missing == "yes", 1, 0))
+
+ggplot(test, aes(x = fct_reorder(key, -missing2, sum), y = fct_reorder(id, -missing2, sum), fill = value2)) +
+  geom_tile(color = "white") + 
+  scale_fill_gradient2(low = "blue", mid = "white", high ="yellow", na.value = "black") + theme_bw()
+```
+
+#Missing by other attributes
+
+We have already seen from *missing by column* that only four of the attributes have missing values. Therefore, it may not be meaningful to compare the missing values by year, rating, or votes, etc.
+
+
+
+
+
+
+
