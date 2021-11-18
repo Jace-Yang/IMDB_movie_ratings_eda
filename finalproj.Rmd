@@ -1,61 +1,150 @@
+--- 
+title: "IMDB Movies Rating Analysis"
+author: "Jace Yang, Meggie Wen"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+---
+--- 
+title: "IMDB Movies Rating Analysis"
+author: "Jace Yang, Meggie Wen"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+---
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+# Introduction
+
+
+<!--chapter:end:index.Rmd-->
+
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Data sources
+
+
+<!--chapter:end:02-data.Rmd-->
+
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Data transformation
+
+```{r, include=FALSE}
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+source("srcs/helpers.R")
+```
+
+```{r, eval=FALSE}
+#name.basics = fread(file = 'data/input/name.basics.tsv')
+ratings = fread(file = 'data/input/title.ratings.tsv')
+#principals = fread(file = 'data/input/title.principals.tsv')
+#episode = fread(file = 'data/input/title.episode.tsv')
+#crew = fread(file = 'data/input/title.crew.tsv')
+basics <- fread( 'data/input/title.basics.tsv')
+#akas = fread(file = 'data/input/title.akas.tsv')
+
+ratings %>% 
+  inner_join(basics) %>%
+  as_tibble() -> imdb
+imdb %>% head(100000) -> imdb_sample
+save(imdb, file = "data/processing/imdb.RData")
+save(imdb_sample, file = "data/processing/imdb_sample.RData")
+```
+
+<!--chapter:end:03-cleaning.Rmd-->
+
+
+# Missing values
+
+Placeholder
+
+
+## Missing value recognition
+## Missing plot
+
+<!--chapter:end:04-missing.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Results
+
+<!--chapter:end:05-results.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Interactive component
+
+
+
+<!--chapter:end:06-interactive.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+# Conclusion
+
+
+<!--chapter:end:07-conclusion.Rmd-->
+
 ---
 title: "PS4_4"
 author: "Meggie"
 date: "11/17/2021"
 output: html_document
 ---
+```{r include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
 
-```{r setup, message = F, warning = F, include=FALSE}
-options(digits = 4, scipen = 999)
-knitr::opts_chunk$set(fig.align = 'center',
-                      fig.width = 9.5, 
-                      fig.height = 6.5,
-                      cache = T,
-                      warning = F,
-                      message = F,
-                      #echo = F,
-                      eval = T)
-
-# Set working dictionary where this rmd file is.
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-
-# Basics
-if(!require(dplyr)) install.packages("dplyr")
-if(!require(tibble)) install.packages("tibble")
-if(!require(tidyr)) install.packages("tidyr")
-if(!require(ggplot2)) install.packages("ggplot2")
-if(!require(forcats)) install.packages("forcats")
-if(!require(patchwork)) install.packages("patchwork")
-if(!require(scales)) install.packages("scales")
-if(!require(readr)) install.packages("readr")
-if(!require(ggthemes)) install.packages("ggthemes")
-if(!require(ggrepel)) install.packages("ggrepel")
-if(!require(GGally)) install.packages("GGally")
-if(!require(plotly)) install.packages("plotly")
-if(!require(forcats)) install.packages("forcats")
-if(!require(stringr)) install.packages("stringr")
-
-if(!require(ggpubr)) install.packages("ggpubr")
-if(!require(PupillometryR)) install.packages("PupillometryR")
-if(!require(ggridges)) install.packages("ggridges")
-if(!require(RColorBrewer)) install.packages("RColorBrewer")
-if(!require(magrittr)) install.packages("magrittr") # allow %<>%
-
-if(!require(vcd)) install.packages("vcd")
-if(!require(d3r)) install.packages("d3r")
-if(!require(ggalluvial)) install.packages("ggalluvial")
-if(!require(parcoords)) install.packages("parcoords")
-
-# Data Set
-if(!require(Lock5withR)) install.packages("Lock5withR")
-if(!require(openintro)) install.packages("openintro")
-
-# pair plot
-if(!require(gridGraphics)) install.packages("gridGraphics")
-if(!require(gridExtra)) install.packages("gridExtra")
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 # Data transformation
-```
+
 ```{r, include=FALSE}
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source("srcs/helpers.R")
@@ -160,8 +249,7 @@ We can infer that:
 
 ```{r}
 library(mi)
-imdb_bytitle <- column_to_rownames(imdb_bytitle,"primaryTitle")
-x <- missing_data.frame(imdb_bytitle)
+x <- missing_data.frame(imdb_mostvotes)
 image(x)
 ```
 ```{r,fig.width=11,fig.height=8}
@@ -186,59 +274,12 @@ ggplot(test, aes(x = fct_reorder(key, -missing2, sum), y = fct_reorder(id, -miss
 
 We have already seen from *missing by column* that only four of the attributes have missing values. Therefore, it may not be meaningful to compare the missing values by year, rating, or votes, etc.
 
-```{r}
-imdb %>%
-  select(startYear, genres, runtimeMinutes) %>%
-  group_by(startYear) %>%
-  summarise(total_movie = n(),
-            miss_genres = sum(ifelse(is.na(genres), 1, 0)) / total_movie,
-            miss_runtime = sum(ifelse(is.na(runtimeMinutes), 1, 0)) / total_movie)  -> imdb_na_by_startyear
-
-imdb_na_by_startyear <- subset(imdb_na_by_startyear, as.numeric(startYear)<2022)
-imdb_na_by_startyear %>%
-ggplot() +
-  aes(x = as.numeric(startYear),
-      y = miss_runtime) +
-  geom_area(fill = "#6166B388") +
-  theme_jace
-imdb_na_by_startyear %>%
-ggplot() +
-  aes(x = as.numeric(startYear),
-      y = miss_genres) +
-  geom_area(fill = "#6166B388") +
-  theme_jace 
-  
-imdb_na_by_startyear %>%
-ggplot() +
-  aes(x = as.numeric(startYear),
-      y = total_movie) +
-  geom_area(fill = "#6166B388") +
-  theme_jace 
-```
-
-```{r}
-imdb %>%
-  select(genres, runtimeMinutes) %>%
-  mutate(miss_min = ifelse(is.na(runtimeMinutes), 1, 0)) %>%
-  separate_rows(genres) %>%
-  group_by(genres) %>%
-  summarise(total_movie = n(),
-            miss_runtime = sum(miss_min))  -> imdb_na_by_genres
-imdb_na_by_genres %>%
-  mutate(genres=fct_reorder(genres, miss_runtime)) %>%
-  
-ggplot() +
-   aes(x = genres,
-       y = miss_runtime) +
-  geom_col(fill = "#6166B388") +
-  theme_jace +
-  scale_y_continuous(labels = percent_format()) +
-  only_x +
-  coord_flip()
-```
 
 
 
 
 
+
+
+<!--chapter:end:PS4_4.Rmd-->
 
