@@ -105,7 +105,7 @@ ggplot(tidyimdb, aes(x = key, y = fct_rev(id), fill = missing)) +
 
 ## Missing plot
 
-### Heatmap
+### Missing pattern summary
 
 Then we chan the missing value plot we coded from the PSet 4.
 
