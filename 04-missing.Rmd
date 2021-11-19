@@ -59,7 +59,6 @@ We first take a glance of the missingness.
   
   - `endYear` and `runtimeMinutes` seem to be a severely missing columns.
 
-
   ```{r}
   imdb %>% 
     mutate(startYear = as.numeric(startYear)) %>%
