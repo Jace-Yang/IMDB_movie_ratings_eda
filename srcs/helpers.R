@@ -59,6 +59,15 @@ JACE_COLOR <- c("#FF5A5F", "#FFB400", "#007A87",
 JACE_COLOR_SCALE <- scale_color_manual(values = JACE_COLOR)
 JACE_FILL_SCALE <- scale_fill_manual(values = JACE_COLOR)
 
+theme(plot.title = element_text(face="bold",
+                                hjust = 0.5,
+                                colour = "black",
+                                margin = margin(t = 0, r = 0, b = 5, l = 0),
+                                size = 14),
+      plot.subtitle = element_text(hjust = 0.5,
+                                   size = 12)) -> center_title
+
+
 only_x = theme(
   panel.grid.major.x = element_line(linetype = "dashed", color = "lightgray"),
   panel.grid.major.y = element_blank(),
@@ -256,10 +265,11 @@ plot_missing <- function(df, percent = F, long_axis = F){
                             ifelse(nrow(missing_patterns) < 20, 5, 4)),
               color = "gray22",
               na.rm = TRUE) +
+    
     scale_fill_manual(values = c("na" = "#6166B3",
                                  "not_na" = "#cbcbcb", 
                                  "not_na_and_complete" = "#b3b3b3")) +
-    theme_bw() +
+    theme_bw() + 
     theme_axis_text_x +
     labs(x = "variable",
          y = "missing pattern",
@@ -292,11 +302,17 @@ plot_missing <- function(df, percent = F, long_axis = F){
       theme_bw() +
       theme(panel.grid.major.x = element_blank(),
             panel.grid.minor.x = element_blank()) +
+      
       theme_axis_text_x +
+      center_title +
       scale_y_continuous(breaks = breaks_width(25), limits = c(0, 100), expand = c(0, 0)) +
       labs(x = "",
            title = "Missing value patterns",
            y = "% rows \n missing:") -> p_na_colomncount
+    
+    cowplot::ggdraw() +
+      cowplot::draw_label(paste0(formatC(n_row, format="d", big.mark=","), 
+                                 '\n rows in total'), size = 11) -> p_na_info
     
   }else{
     missing_patterns %>%
@@ -322,14 +338,20 @@ plot_missing <- function(df, percent = F, long_axis = F){
       theme_bw() +
       theme(panel.grid.major.x = element_blank(),
             panel.grid.minor.x = element_blank()) +
+      center_title +
       theme_axis_text_x +
       scale_y_continuous(breaks = breaks_pretty(3), expand = c(0, 0)) +
       labs(x = "",
            title = "Missing value patterns",
            y = "num rows \n missing:") -> p_na_colomncount
+    
+    cowplot::ggdraw() +
+      cowplot::draw_label("") -> p_na_info
   }
   
-  print(p_na_colomncount + plot_spacer() + p_na_pattern + p_na_rowcount + plot_layout(ncol=2, widths = c(5,1), heights = c(1,5)))
+  
+  
+  print(p_na_colomncount + p_na_info + p_na_pattern + p_na_rowcount +  plot_layout(ncol=2, widths = c(5,1), heights = c(1,5)))
 }
 
 

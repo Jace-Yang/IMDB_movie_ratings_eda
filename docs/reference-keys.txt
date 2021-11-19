@@ -21,3 +21,14 @@ missing-by-columns-and-rows
 heatmap-1
 inight-about-why-na-happens
 missing-pattern-summary
+missing-by-years
+missing-by-genres
+missing-values-1
+missing-by-columns-and-rows-1
+missing-pattern-summary-1
+missing-by-other-attributes-1
+missing-by-years-1
+missing-by-genres-1
+inight-about-why-na-happens-1
+missing-glance
+insight-about-why-na-happens
