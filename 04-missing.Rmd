@@ -1,7 +1,7 @@
 # Missing values
 
 ```{r, include=FALSE}
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # set to local directory
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # set to local directory
 source("srcs/helpers.R")
 load(file = "data/processing/imdb_sample.RData")
 load(file = "data/processing/imdb.RData")

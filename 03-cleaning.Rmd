@@ -6,7 +6,7 @@ editor_options:
 # Data transformation
 
 ```{r, include=FALSE}
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source("srcs/helpers.R")
 ```
 
