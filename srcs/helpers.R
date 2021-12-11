@@ -355,7 +355,19 @@ plot_missing <- function(df, percent = F, long_axis = F){
 }
 
 
-get_DT <-function(df, rownames = F, default_show = 10){
+get_DT <-function(df, rownames = F, default_show = 10, button = T){
+  
+  if(!button){
+    df %>%
+      
+      DT::datatable(rownames = rownames,
+                    editable = "cell",
+                    escape = FALSE,
+                    options = list(autoWidth = T,
+                                   dom = 't', # remove button
+                                   pageLength = default_show))
+      
+  }else{
   df %>%
     
     DT::datatable(
@@ -379,6 +391,7 @@ get_DT <-function(df, rownames = F, default_show = 10){
 
                      search = list(regex = TRUE, caseInsensitive = FALSE),
                      
+                     
                      buttons = list(
                        
                        list(
@@ -399,4 +412,5 @@ get_DT <-function(df, rownames = F, default_show = 10){
                      
                      lengthMenu = c(10, 25, 50, 200, 500)))  -> DTtable
   return(DTtable)
+  }
 }

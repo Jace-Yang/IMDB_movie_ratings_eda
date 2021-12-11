@@ -13,3 +13,11 @@ missing-by-genres
 results
 interactive-component
 conclusion
+data-file
+basic-data
+rating-data
+merge-data
+what-specific-features-do-movies-with-higher-profitability-have
+what-contributes-to-higher-rating-films
+is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off
+shit-bro

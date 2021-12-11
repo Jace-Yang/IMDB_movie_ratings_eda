@@ -24,7 +24,7 @@
 <meta name="author" content="Jace Yang, Meggie Wen" />
 
 
-<meta name="date" content="2021-11-19" />
+<meta name="date" content="2021-12-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -59,86 +59,10 @@
 <link href="libs/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
 <link href="libs/dt-core-1.11.3/css/jquery.dataTables.extra.css" rel="stylesheet" />
 <script src="libs/dt-core-1.11.3/js/jquery.dataTables.min.js"></script>
-<script src="libs/jszip-1.11.3/jszip.min.js"></script>
-<script src="libs/pdfmake-1.11.3/pdfmake.js"></script>
-<script src="libs/pdfmake-1.11.3/vfs_fonts.js"></script>
-<link href="libs/dt-ext-buttons-1.11.3/css/buttons.dataTables.min.css" rel="stylesheet" />
-<script src="libs/dt-ext-buttons-1.11.3/js/dataTables.buttons.min.js"></script>
-<script src="libs/dt-ext-buttons-1.11.3/js/buttons.html5.min.js"></script>
-<script src="libs/dt-ext-buttons-1.11.3/js/buttons.colVis.min.js"></script>
-<script src="libs/dt-ext-buttons-1.11.3/js/buttons.print.min.js"></script>
-<link href="libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet" />
-<script src="libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
-<link href="libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet" />
-<script src="libs/selectize-0.12.0/selectize.min.js"></script>
 <link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
 
 
-<style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-</style>
 
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -159,7 +83,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data sources</a></li>
-<li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a></li>
+<li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="data-transformation.html"><a href="data-transformation.html#data-file"><i class="fa fa-check"></i><b>3.1</b> Data file</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="data-transformation.html"><a href="data-transformation.html#basic-data"><i class="fa fa-check"></i><b>3.1.1</b> basic data</a></li>
+<li class="chapter" data-level="3.1.2" data-path="data-transformation.html"><a href="data-transformation.html#rating-data"><i class="fa fa-check"></i><b>3.1.2</b> Rating data</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="data-transformation.html"><a href="data-transformation.html#merge-data"><i class="fa fa-check"></i><b>3.2</b> Merge Data</a></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#missing-value-recognition"><i class="fa fa-check"></i><b>4.1</b> Missing value recognition</a></li>
@@ -175,7 +107,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.4.2" data-path="missing-values.html"><a href="missing-values.html#missing-by-genres"><i class="fa fa-check"></i><b>4.4.2</b> Missing by Genres</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a></li>
+<li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#what-specific-features-do-movies-with-higher-profitability-have"><i class="fa fa-check"></i><b>5.1</b> What specific features do movies with higher profitability have?</a></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#what-contributes-to-higher-rating-films"><i class="fa fa-check"></i><b>5.2</b> What contributes to higher-rating films?</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="results.html"><a href="results.html#shit-bro"><i class="fa fa-check"></i><b>5.2.1</b> shit bro</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off"><i class="fa fa-check"></i><b>5.3</b> Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
 <li class="divider"></li>
@@ -199,7 +139,98 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="results" class="section level1" number="5">
 <h1><span class="header-section-number">Chapter 5</span> Results</h1>
+<p>In this project, we want to discover the contributing factors that make a movie more successful than others. So we have raised the following questions.</p>
+<ul>
+<li><p>What specific features do movies with higher profitability have?</p></li>
+<li><p>What contributes to higher-rating films?</p></li>
+<li><p>Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</p></li>
+</ul>
+<div id="what-specific-features-do-movies-with-higher-profitability-have" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> What specific features do movies with higher profitability have?</h2>
+<ul>
+<li><p>First, we can use the budget data provided by the-numbers to estimate the cost, and then combine it with box offices to calculate the revenue of each movie.</p></li>
+<li><p>Through IMDB’s main data, we can analyze the genres of movies, popularity of the star/director/screenwriter, or the runtime of movies that can bring high profits.</p></li>
+</ul>
+</div>
+<div id="what-contributes-to-higher-rating-films" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> What contributes to higher-rating films?</h2>
+<div id="shit-bro" class="section level3" number="5.2.1">
+<h3><span class="header-section-number">5.2.1</span> shit bro</h3>
+<ul>
+<li>In addition to using the same data as the first question, we can also use review data provided by Stanford to discover how people think when lots of people give high scores to a movie.</li>
+</ul>
+<div id="htmlwidget-83b74bd4708f25b168dd" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-83b74bd4708f25b168dd">{"x":{"filter":"none","vertical":false,"editable":{"target":"cell","disable":{"columns":null},"numeric":[1,2],"area":[]},"data":[["0.00%","25.00%","50.00%","75.00%","80.00%","85.00%","90.00%","95.00%","97.00%","99.00%","99.50%","99.90%","99.99%"],[5,11,24,92,137,227,431,1234,2407,10181,28880,182623,723585],[1195712,903082,602174,300550,239743,179472,119719,59809,35873,11959,5980,1197,121],["El rey de las finanzas<br/>Alas de juventud<br/>Fresh Painter","The Deserter<br/>Eine moderne Jungfrau von Orleans<br/>Hiawatha","Barnet Horse Fair<br/>Dessinateur express<br/>The Beach at Villiers in a Gale","Entente cordiale<br/>From the Submerged<br/>Double Crossed","The Violin Maker of Cremona<br/>On the Fire<br/>The Soul of Youth","The Golden Chance<br/>Ring Up the Curtain<br/>Alice's Spooky Adventure","Mystery Liner<br/>Frontier<br/>They Shall Have Music","Tango Tangle<br/>The Little Match Girl<br/>Till the End of Time","Till Human Voices Wake Us<br/>The Screwfly Solution<br/>Steak","Le Mans<br/>Law of the Lawless<br/>Beyond the Reach","Clouds of Sils Maria<br/>The Professor<br/>Universal Soldier: The Return","Rocky III<br/>Jarhead<br/>Eagle Eye","The Imitation Game<br/>City of God<br/>Blade Runner"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>%<\/th>\n      <th>Quantiles of # of Votes<\/th>\n      <th>Number of rows >= Quantiles<\/th>\n      <th>Examples<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"autoWidth":true,"dom":"t","pageLength":20,"columnDefs":[{"className":"dt-right","targets":[1,2]}],"order":[],"orderClasses":false,"lengthMenu":[10,20,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<pre><code>## [1] &quot;A Lawless Street&quot;</code></pre>
+<ul>
+<li><p>It’s not supprising to find out that over 90% of the movies do not have votes over 500. We consider 1000 as a threshold to determine the movie is at least not unknown to the general public.</p>
+<ul>
+<li>For example, I asked several friends and none of them ever heard of <a href="https://www.imdb.com/title/tt0005402/">The Golden Chance</a>, which receives 227 votes and this number is higher than 85% of the movies in the entire imdb database.</li>
+</ul></li>
+</ul>
+<!-- ```{r} -->
+<!-- imdb %>% -->
+<!--   filter(numVotes > 100000) %>% -->
+<!--   ggplot() + -->
+<!--   aes(x = "", -->
+<!--       y = numVotes, -->
+<!--       fill = "") + -->
+<!--   geom_point(aes(color = ""), -->
+<!--              position = position_jitter(w = .15), -->
+<!--              size = 0.5, -->
+<!--              alpha = 0.05) + -->
+<!--   geom_boxplot(width = .25, -->
+<!--                outlier.shape = NA, -->
+<!--                alpha = 0.5) + -->
+<!--   geom_flat_violin(position = position_nudge(x = .2), -->
+<!--                    alpha = 0.7, -->
+<!--                    adjust = 0.5)  + -->
+<!--   coord_flip() + -->
+<!--   scale_x_discrete(expand = c(0,0)) + -->
+<!--   scale_y_continuous(breaks = breaks_width(5000), trans='log10')# + -->
+<!--   scale_fill_manual(values = JACE_COLOR) + -->
+<!--   scale_color_manual(values = JACE_COLOR) + -->
+<!--   guides(fill = guide_legend(title = "Type of verification of the applicant's income", -->
+<!--                              direction = "horizontal", -->
+<!--                              reverse = T), -->
+<!--          color = guide_legend(title = "Type of verification of the applicant's income", -->
+<!--                               direction = "horizontal", -->
+<!--                               reverse = T)) + -->
+<!--   labs(x = "", -->
+<!--        title = "Raincloud Plot of loan amount by 3 different verified income status") + -->
+<!--   theme_jace + -->
+<!--   only_x + -->
+<!--   theme(legend.position = "bottom") -> p -->
+<!-- p -->
+<!-- ``` -->
+<pre><code>## # A tibble: 1,195,712 × 11
+##    tconst    averageRating numVotes titleType primaryTitle originalTitle isAdult
+##    &lt;chr&gt;             &lt;dbl&gt;    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;           &lt;int&gt;
+##  1 tt0111161           9.3  2488195 movie     The Shawsha… The Shawshan…       0
+##  2 tt0468569           9    2441388 movie     The Dark Kn… The Dark Kni…       0
+##  3 tt1375666           8.8  2190799 movie     Inception    Inception           0
+##  4 tt0137523           8.8  1959929 movie     Fight Club   Fight Club          0
+##  5 tt0110912           8.9  1924045 movie     Pulp Fiction Pulp Fiction        0
+##  6 tt0109830           8.8  1922897 movie     Forrest Gump Forrest Gump        0
+##  7 tt0944947           9.2  1899202 tvSeries  Game of Thr… Game of Thro…       0
+##  8 tt0133093           8.7  1776732 movie     The Matrix   The Matrix          0
+##  9 tt0120737           8.8  1743718 movie     The Lord of… The Lord of …       0
+## 10 tt0167260           8.9  1722424 movie     The Lord of… The Lord of …       0
+## # … with 1,195,702 more rows, and 4 more variables: startYear &lt;chr&gt;,
+## #   endYear &lt;chr&gt;, runtimeMinutes &lt;chr&gt;, genres &lt;chr&gt;</code></pre>
+<ul>
+<li>Also, there might be some relationship between the rating volume and rating in IMDB’s scoring system.</li>
+</ul>
+</div>
+</div>
+<div id="is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off" class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</h2>
+<ul>
+<li><p>A scatter plot with lm lines of box office versus ratings, for example, can reveal their relationship.</p></li>
+<li><p>A matrix can also be drawn to filter those outliers in the first and fourth quadrant (high box office but low score, or high score but low box office). We can extract keywords from their review, generate word cloud plots to analyze their characteristics.</p></li>
+</ul>
 
+</div>
 </div>
             </section>
 

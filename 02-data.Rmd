@@ -1,7 +1,19 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
 # Data sources
 
+Our main data source is obtained from https://www.imdb.com/interfaces/,  a daily updated movie dataset that contains massive information about 258k+ films: 
+
+- Basics: genres, runtimes, starting year, is for adult or not, language, region ···
+
+- Crews: directors, writers ···
+
+- Principal cast: category, role, characters as well as their birth year, profession ···
+
+- Rating: average rating on IMDB,  number of votes ···
+
+Other than that, we also utilize several external data sources to combine features about movies’: 
+
+- Budget: https://www.the-numbers.com/movie/budgets/all
+
+- Box office: https://www.the-numbers.com/box-office-records/worldwide/all-movies/cumulative/all-time
+
+- Review: https://ai.stanford.edu/~amaas/data/sentiment/

@@ -1,16 +1,12 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
 # Data transformation
 
 ```{r, include=FALSE}
-# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source("srcs/helpers.R")
 ```
 
-```{r, eval=FALSE}
+## Data file
+
+```{r}
 #name.basics = fread(file = 'data/input/name.basics.tsv')
 ratings = fread(file = 'data/input/title.ratings.tsv')
 #principals = fread(file = 'data/input/title.principals.tsv')
@@ -18,11 +14,96 @@ ratings = fread(file = 'data/input/title.ratings.tsv')
 #crew = fread(file = 'data/input/title.crew.tsv')
 basics <- fread( 'data/input/title.basics.tsv')
 #akas = fread(file = 'data/input/title.akas.tsv')
+```
 
+### basic data
+
+```{r}
+ratings %>%
+  head(1000) %>%
+  get_DT(default_show = 5, button = F)
+```
+
+### Rating data
+
+```{r}
+basics %>%
+  head(1000) %>%
+  get_DT(default_show = 5, button = F)
+```
+
+## Merge Data
+
+We use the title id `tconst` to merge data acquired from multiple data source.
+
+```{r}
 ratings %>% 
   inner_join(basics) %>%
   as_tibble() -> imdb
-imdb %>% head(100000) -> imdb_sample
-save(imdb, file = "data/processing/imdb.RData")
-save(imdb_sample, file = "data/processing/imdb_sample.RData")
+
+imdb %>% 
+  head(1000) %>%
+  get_DT(button = F)
 ```
+
+
+## Data Preprocess
+
+Noted that the `genres` column is not cleaned data type. Therefore, we
+
+- create a `mainGenres` column to represent the main genres of the movie.
+
+- create a one-to-many mapping table for each movie in order to analysis, e.g, aveage votes for each genres.
+
+
+```{r,eval=FALSE}
+imdb %>% 
+  select(tconst, genres) %>%
+  separate_rows(genres) -> movie_genre_map
+save(movie_genre_map, file = "data/processing/movie_genre_map.RData" )
+rm(movie_genre_map)
+```
+
+```{r}
+imdb %<>%
+  separate(genres, 
+           into = c("mainGenres", "secondGneres", "thirdGenres"),
+           sep = ",")
+
+```
+
+## Missing value recognition
+
+Then, we need to understand how the NA is encoded in the dataset. So we calculate 15 most common value among each columns:
+
+```{r}
+imdb %>%
+  mutate_all(~as.character(.)) %>%
+  pivot_longer(1:ncol(.)) %>%
+  group_by(name, value) %>%
+  summarise(nunique = n()) %>%
+  group_by(name) %>%
+  arrange(-nunique) %>%
+  slice(1:15) %>%
+  get_DT(default_show = 5, button=F)
+```
+
+- Apparently, `\N`, for example, is likely to be one kind of tag for missing value among:
+
+```r
+SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
+```
+
+```{r}
+SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
+imdb %<>%
+  mutate_all( ~ifelse(. %in% SIGN_of_MISSING, NA, .) ) %>%
+  mutate(isAdult = ifelse(isAdult %in% c('0', '1'), isAdult, NA),
+         startYear = as.numeric(startYear))
+```
+
+
+```{r, eval=FALSE}
+save(imdb, file = "data/processing/imdb.RData")
+```
+

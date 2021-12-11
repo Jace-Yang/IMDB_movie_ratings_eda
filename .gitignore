@@ -4,3 +4,12 @@
 .DS_Store
 .tsv
 .csv
+data/input/name.basics.tsv
+data/input/test.csv
+data/input/title.akas.tsv
+data/input/title.basics.tsv
+data/input/title.crew.tsv
+data/input/title.episode.tsv
+data/input/title.principals.tsv
+data/input/title.ratings.tsv
+data/input/train.csv
