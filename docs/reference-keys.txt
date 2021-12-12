@@ -21,3 +21,8 @@ what-specific-features-do-movies-with-higher-profitability-have
 what-contributes-to-higher-rating-films
 is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off
 shit-bro
+budget-data
+limit-the-scope
+join-all-table
+data-preprocess
+long-tail-effect-minority-make-up-majority

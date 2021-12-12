@@ -8,42 +8,202 @@ source("srcs/helpers.R")
 
 ```{r}
 #name.basics = fread(file = 'data/input/name.basics.tsv')
-ratings = fread(file = 'data/input/title.ratings.tsv')
 #principals = fread(file = 'data/input/title.principals.tsv')
 #episode = fread(file = 'data/input/title.episode.tsv')
-#crew = fread(file = 'data/input/title.crew.tsv')
-basics <- fread( 'data/input/title.basics.tsv')
-#akas = fread(file = 'data/input/title.akas.tsv')
+#crew = fread(file = 'data/input/title.crew.tsv') # director and writer!
+ratings = fread('data/input/title.ratings.tsv')
+basics <- fread('data/input/title.basics.tsv')
 ```
 
 ### basic data
 
 ```{r}
-ratings %>%
+basics %>%
   head(1000) %>%
-  get_DT(default_show = 5, button = F)
+  get_DT(default_show = 5)
 ```
 
 ### Rating data
 
 ```{r}
-basics %>%
+ratings %>%
   head(1000) %>%
-  get_DT(default_show = 5, button = F)
+  get_DT(default_show = 5)
 ```
+
+### Budget data
+
+```{r}
+budget %>%
+  head(1000) %>%
+  get_DT(default_show = 5)
+```
+
 
 ## Merge Data
 
-We use the title id `tconst` to merge data acquired from multiple data source.
+### Limit the scope
+
+At this report, we dive in the "movies", and especially those with box office (go the thereter). But the original dataset contains all these 10 types:
 
 ```{r}
 ratings %>% 
   inner_join(basics) %>%
   as_tibble() -> imdb
 
+
+  
+  
+save(imdb, file = "data/processing/imdb.RData")
+imdb %>%
+  #filter(titleType=="tvMovie") %>% 
+  group_by(titleType) %>%
+  mutate(n = n(),
+         top1V = max(numVotes)) %>%
+  group_by(titleType) %>%
+  arrange(-numVotes) %>%
+  slice(1:3) %>%
+  summarise(`Number of work` = max(n),
+            `Highest Vote` = max(top1V),
+            `Top 3 popular voted` = paste0(primaryTitle, collapse = "<br/>")) %>%
+  mutate(titleType = ifelse(grepl("Movie", titleType, ignore.case = T), 
+                            paste0('<span style="background-color: #277cee44">',
+                                   titleType,
+                                   '</span>'),
+                            titleType)) %>% 
+  arrange(-`Number of work`) %>%
+get_DT(button = F, default_show = 20)
+
+```
+
+
+
+- We only focus on `movie` and `tvMovie` (as some of them have box office, like [High School Musical 3: Senior Year](https://www.the-numbers.com/movies/franchise/High-School-Musical#tab=summary)). And we will use them to map other data.
+
+### Join all table
+
+For basic and rating data, we can use the title id `tconst` to merge directly.
+
+```{r}
 imdb %>% 
-  head(1000) %>%
-  get_DT(button = F)
+  filter(titleType %in% c("movie", "tvMovie")) -> imdb_mv
+```
+
+
+From multiple data source, we need to map them by movie name and it's alias.
+However, the `budget` data acquired from [numbers](https://www.the-numbers.com/movie/budgets/all/1) is extremely difficult to process.
+
+```{r,eval=FALSE}
+akas = fread(file = 'data/input/title.akas.tsv')
+budget <- readxl::read_xlsx( 'data/input/budget.xlsx') 
+budget %<>%
+  mutate(ReleaseDate2 = as.Date(lubridate::parse_date_time(ReleaseDate, "%b %d, %Y")))  %>% 
+  mutate(ReleaseDate3 = str_extract(ReleaseDate, "[0-9]+"))  %>% 
+  mutate(RealeaseYear = case_when(
+    !is.na(ReleaseDate2) ~ year(ReleaseDate2),
+    !is.na(ReleaseDate3) ~ as.integer(ReleaseDate3),
+    T ~ NA_integer_
+  )) %>%
+  select(-c(ReleaseDate2, ReleaseDate3)) %>%
+  mutate(movie_pure_name = tolower(gsub('[[:space:]]+|[[:punct:]]+', '', Movie)))
+
+akas %>%
+   transmute(tconst = titleId, 
+             title,
+             movie_pure_name = tolower(gsub('[[:space:]]+|[[:punct:]]+', '', title))) %>% 
+   inner_join(imdb_mv %>% 
+                transmute(tconst,
+                          RealeaseYear = as.integer(startYear),
+                          numVotes)) %>%
+  unique -> akas_mapper
+
+
+budget_matched = list()
+# Safest way: name + year
+## use movie primary name + year to map to tconst
+
+budget %>% 
+  filter(!is.na(RealeaseYear)) %>%
+  inner_join(imdb_mv %>% transmute(tconst, numVotes, Movie = primaryTitle, RealeaseYear = as.integer(startYear))) %>%
+  # Resolve conflict
+  group_by(Movie, RealeaseYear) %>%
+  filter(numVotes == max(numVotes)) %>%
+  ungroup -> budget_matched[[1]]
+
+## use movie original name + year to map to tconst
+budget %>% 
+  anti_join(bind_rows(budget_matched)) %>%
+  inner_join(imdb_mv %>% transmute(tconst, numVotes, Movie = originalTitle, RealeaseYear = as.integer(startYear))) %>%
+  # Resolve conflict
+  group_by(Movie, RealeaseYear) %>%
+  filter(numVotes == max(numVotes)) %>%
+  ungroup -> budget_matched[[2]]
+
+## use movie akas(drop punct) + year to map to tconst
+budget %>%
+  anti_join(bind_rows(budget_matched)) %>%
+  inner_join(akas_mapper %>% select(tconst, movie_pure_name, RealeaseYear, numVotes)) %>%
+  unique %>%
+  # Resolve conflict
+  group_by(Movie, RealeaseYear) %>%
+  filter(numVotes == max(numVotes)) -> budget_matched[[3]]
+
+# Not the best: only use name, and use num Votes to determine which one it refers to.
+budget %>%
+  anti_join(bind_rows(budget_matched)) %>%
+  inner_join(akas_mapper %>% select(tconst, movie_pure_name, numVotes)) %>%
+  unique %>% 
+  group_by(Movie, RealeaseYear) %>%
+  filter(numVotes == max(numVotes)) -> budget_matched[[4]]
+  
+# Worst: fuzzy matching name + year -  like Star Wars Ep. VII: The Force Awakens with Star Wars: Episode VII
+stringdist_join <- function(word){
+  tibble(word = word) %>%
+  bind_cols(akas_mapper) %>%
+    mutate(stringdist = stringdist(word, title, method="osa")) %>%
+    filter(stringdist < 0.5 * nchar(word)) %>%
+    arrange(-stringdist) -> result
+  
+  if(nrow(result)==0){
+    return(NA)
+  }else{
+    return(result %>% slice(1) %>% pull(tconst))
+  }
+}
+
+budget %>%
+  anti_join(bind_rows(budget_matched)) %>% # takes about 5mins to run!
+  rowwise() %>%
+  mutate(fuzzy_join_id = stringdist_join(Movie)) -> budget_5
+
+budget_5 %>%
+  rename(tconst = fuzzy_join_id) -> budget_matched[[5]]
+
+bind_rows(budget_matched) %>%
+  
+  distinct(Movie, ReleaseDate, RealeaseYear, tconst, ProductionBudget, DomesticGross, WorldwideGross) %>%
+  group_by(tconst) %>%
+  filter(RealeaseYear == max(RealeaseYear),
+         WorldwideGross == max(WorldwideGross)) %>%
+  ungroup -> budget_tconst_mapper
+save(budget_tconst_mapper, file="data/processing/budget_tconst_mapper.RData")
+
+```
+
+After a tedious clean, we get this data to map them to imdb database:
+
+```{r}
+budget_tconst_mapper %>% 
+  get_DT()
+```
+
+```{r}
+imdb_mv %>%
+  left_join(budget_tconst_mapper %>%
+              select(-c(Movie, ReleaseDate)) %>%
+              mutate_at(c("ProductionBudget", "DomesticGross", "WorldwideGross"), ~ str_remove_all(., "\\$|,") %>% as.numeric()) %>%
+              mutate(Profit = WorldwideGross - ProductionBudget,
+                     ROI = Profit / WorldwideGross) ) %>% as.data.frame() %>% arrange(-numVotes) -> imdb_mv_cleaned
 ```
 
 
@@ -57,7 +217,7 @@ Noted that the `genres` column is not cleaned data type. Therefore, we
 
 
 ```{r,eval=FALSE}
-imdb %>% 
+imdb_mv_cleaned %>% 
   select(tconst, genres) %>%
   separate_rows(genres) -> movie_genre_map
 save(movie_genre_map, file = "data/processing/movie_genre_map.RData" )
@@ -65,19 +225,18 @@ rm(movie_genre_map)
 ```
 
 ```{r}
-imdb %<>%
+imdb_mv_cleaned %<>%
   separate(genres, 
            into = c("mainGenres", "secondGneres", "thirdGenres"),
            sep = ",")
-
 ```
 
-## Missing value recognition
+- Missing value recognition
 
 Then, we need to understand how the NA is encoded in the dataset. So we calculate 15 most common value among each columns:
 
 ```{r}
-imdb %>%
+imdb_mv_cleaned %>%
   mutate_all(~as.character(.)) %>%
   pivot_longer(1:ncol(.)) %>%
   group_by(name, value) %>%
@@ -85,25 +244,26 @@ imdb %>%
   group_by(name) %>%
   arrange(-nunique) %>%
   slice(1:15) %>%
-  get_DT(default_show = 5, button=F)
+  get_DT(default_show = 7)
 ```
 
-- Apparently, `\N`, for example, is likely to be one kind of tag for missing value among:
+  - Apparently, `\N`, for example, is likely to be one kind of tag for missing value among:
 
-```r
-SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
-```
+  ```r
+  SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
+  ```
 
-```{r}
-SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
-imdb %<>%
-  mutate_all( ~ifelse(. %in% SIGN_of_MISSING, NA, .) ) %>%
-  mutate(isAdult = ifelse(isAdult %in% c('0', '1'), isAdult, NA),
-         startYear = as.numeric(startYear))
-```
-
+- Delete movie start at 2022 or later.
 
 ```{r, eval=FALSE}
-save(imdb, file = "data/processing/imdb.RData")
+SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
+imdb_mv_cleaned %>%
+  mutate_all( ~ifelse(. %in% SIGN_of_MISSING, NA, .) ) %>%
+  mutate(isAdult = ifelse(isAdult %in% c('0', '1'), isAdult, NA),
+         startYear = as.numeric(startYear)) %>%
+  filter(startYear <= 2021) %>%
+  select(-RealeaseYear) -> imdb
+save(imdb, file = "data/processing/imdb(cleaned).RData")
 ```
+
 

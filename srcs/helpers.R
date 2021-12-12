@@ -1,4 +1,4 @@
-options(digits = 4, scipen = 999)
+options(digits = 4, scipen = 999, tibble.print_min = 15)
 knitr::opts_chunk$set(fig.align = 'center',
                       fig.width = 9.5, 
                       fig.height = 6.5,
@@ -52,6 +52,7 @@ if(!require(gridExtra)) install.packages("gridExtra")
 if(!require(DT)) install.packages("DT")
 if(!require(htmlwidgets)) install.packages("htmlwidgets")
 
+# ----Vidualize----
 # set up ggplot2 helper variable
 JACE_COLOR <- c("#FF5A5F", "#FFB400", "#007A87", 
                 "#8CE071", "#7B0051", "#00D1C1", "#FFAA91", "#B4A76C", 
@@ -412,5 +413,24 @@ get_DT <-function(df, rownames = F, default_show = 10, button = T){
                      
                      lengthMenu = c(10, 25, 50, 200, 500)))  -> DTtable
   return(DTtable)
+  }
+}
+
+
+
+# ----Data Preprocess----
+
+check_conflict <- function(df, vars){
+  df %>% 
+    group_by_at(vars) %>% 
+    filter(n() > 1) -> conflict
+  
+  if(nrow(conflict) == 0){
+    print("No problem!")
+    df %>% ungroup %>% return()
+    
+  }else{
+    print("Conflict!!!!!!!!!!!!!!!!!!")
+    return(conflict) %>% arrange_at(vars) %>% return()
   }
 }
