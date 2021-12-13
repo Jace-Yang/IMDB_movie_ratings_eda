@@ -4,13 +4,14 @@
 source("srcs/helpers.R")
 ```
 
-## Data file
+In this section, we will discuss how to merge multiple movie data. It can be tricky to merge data from multiple sources. Talk is cheap, click the view source button to see the code if you are interested!
+
+## Input data file
 
 ```{r,eval=FALSE}
 name.basics = fread(file = 'data/input/name.basics.tsv')
 principals = fread(file = 'data/input/title.principals.tsv')
-#episode = fread(file = 'data/input/title.episode.tsv')
-#crew = fread(file = 'data/input/title.crew.tsv') # director and writer!
+akas = fread(file = 'data/input/title.akas.tsv')
 ratings = fread('data/input/title.ratings.tsv')
 basics <- fread('data/input/title.basics.tsv')
 
@@ -18,38 +19,47 @@ name.basics %>% head(100) -> name.basics_head
 principals %>% head(100) -> principals_head
 ratings %>% head(100) -> ratings_head
 basics %>% head(100) -> basics_head
+akas %>% head(100) -> akas_head
 
-save(name.basics_head, principals_head, ratings_head, basics_head,
+save(name.basics_head, principals_head, ratings_head, basics_head, akas_head,
      file = "data/processing/data_samples.RData")
 ```
+
 
 ```{r}
 load(file = "data/processing/data_samples.RData")
 ```
 
-### basic data
+- `basics` contains following information for each movies:
 
 ```{r}
 basics_head %>% 
   get_DT(default_show = 5)
 ```
 
-### Rating data
+  - `akas` contains all alias for each movies:
+  
+  ```{r}
+  akas_head %>% 
+    get_DT(default_show = 5)
+  ```
+
+
+- `ratings` contains IMDb rating and votes:
 
 ```{r}
 ratings_head %>%
   get_DT(default_show = 5)
 ```
 
-### Crew data
+- `principals` contains principal cast/crew for each movies
+
 ```{r}
 principals_head %>%
   get_DT(default_show = 5)
 ```
 
-
-
-### Budget data
+- `Budget` contains rev/cost info
 
 ```{r}
 budget <- readxl::read_xlsx( 'data/input/budget.xlsx') 
@@ -61,8 +71,7 @@ budget %>%
 
 
 
-
-## Merge Data
+## Merge & Preprocess Data
 
 ### Limit the scope
 
@@ -99,22 +108,37 @@ get_DT(button = F, default_show = 20)
 
 ```
 
-
-
 - We only focus on `movie` and `tvMovie` (as some of them have box office, like [High School Musical 3: Senior Year](https://www.the-numbers.com/movies/franchise/High-School-Musical#tab=summary)). And we will use them to map other data.
 
-### Join all table
+- Also, we delete movie start at 2022 or later.
 
-For basic and rating data, we can use the title id `tconst` to merge directly.
+### Merge `movie`-wised data
+
+- For basic and rating data, we can use the title id `tconst` to merge directly.
 
 ```{r}
 imdb %>% 
   filter(titleType %in% c("movie", "tvMovie")) -> imdb_mv
 ```
 
+- But the for the `budget` data acquired from [numbers](https://www.the-numbers.com/movie/budgets/all/1), we need to map them by movie name and it's alias. Is is a tedious process to locate the IDMB id(`tconst`) value of 6,196  movies in theaters :
 
-From multiple data source, we need to map them by movie name and it's alias.
-However, the `budget` data acquired from [numbers](https://www.the-numbers.com/movie/budgets/all/1) is extremely difficult to process.
+  1. Safest way: use movie name and their year to find id
+  
+        - use `movies name` + `RealeaseYear` in budget to map `primary title` + `year` from `basics` of IDMB. -> ✔️ matches 4495 rows
+
+        - use `movies name` + `RealeaseYear` in budget to map `original title` + `year` from `basics` of IDMB.  -> ✔️ matches 137 rows
+    
+        - use `movies name`(drop punctuation) + `RealeaseYear` in budget to map `title`(drop punctuation) + `year` from `akas` of IDMB. -> ✔️ matches 410 rows
+    
+  2. Not the best way: only use its name, and for multiple movies that share a same name, only consider the oen with highest number of votes in IMDB.  -> ✔️ matches 1012 rows
+  
+  3. Last way: fuzzy matching name + year -  like Star Wars Ep. VII: The Force Awakens with Star Wars: Episode VII -> ✔️ matches 135 rows
+  
+  4. -> ⚠️ Last 7 movies that can't be matched to IMDB: consider its rev/cost data as missing.
+  
+  
+
 
 ```{r,eval=FALSE}
 akas = fread(file = 'data/input/title.akas.tsv')
@@ -129,8 +153,6 @@ budget %<>%
   )) %>%
   select(-c(ReleaseDate2, ReleaseDate3)) %>%
   mutate(movie_pure_name = tolower(gsub('[[:space:]]+|[[:punct:]]+', '', Movie)))
-
-
 
 akas %>%
    transmute(tconst = titleId, 
@@ -219,8 +241,9 @@ save(budget_tconst_mapper, file="data/processing/budget_tconst_mapper.RData")
 After a tedious clean, we get this data to map them to imdb database:
 
 ```{r}
-list(load(file="data/processing/budget_tconst_mapper.RData"))
+load(file="data/processing/budget_tconst_mapper.RData")
 budget_tconst_mapper %>% 
+  head(100) %>%
   get_DT()
 ```
 
@@ -234,11 +257,44 @@ imdb_mv %>%
                      ROI = WorldwideGross / ProductionBudget) ) %>% as.data.frame() %>% arrange(-numVotes) -> imdb_mv_cleaned
 ```
 
+Then, we need to understand how the NA is encoded in the dataset. So we calculate 15 most common value among each columns:
+
+```{r}
+imdb_mv_cleaned %>%
+  mutate_all(~as.character(.)) %>%
+  pivot_longer(1:ncol(.)) %>%
+  group_by(name, value) %>%
+  summarise(nunique = n()) %>%
+  group_by(name) %>%
+  arrange(-nunique) %>%
+  slice(1:15) %>%
+  get_DT(default_show = 5)
+```
+
+  - Apparently, `\N`, for example, is likely to be one kind of tag for missing value among:
+
+  ```r
+  SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
+  ```
+
+
+
+```{r}
+SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
+imdb_mv_cleaned %>%
+  mutate_all( ~ifelse(. %in% SIGN_of_MISSING, NA, .) ) %>%
+  mutate(isAdult = ifelse(isAdult %in% c('0', '1'), isAdult, NA),
+         startYear = as.numeric(startYear)) %>%
+  filter(startYear <= 2021) %>%
+  select(-RealeaseYear) -> imdb_mv_cleaned_2
+
+```
 
 
 
 
-Add crew and priciples
+
+### Merge `person`-wised data
 
 ```{r,eval=FALSE}
 library(magick)
@@ -262,61 +318,28 @@ imdb_person %>%
   slice(1:30) %>% ungroup %>%
   split(~category) -> imdb_people
 
-save(imdb_people, file="data/processing/imdb_people")
-
-
+save(imdb_people, file="data/processing/imdb_people.RData")
 ```
 
-
-
-
-## Data Preprocess
-
-- Missing value recognition
-
-Then, we need to understand how the NA is encoded in the dataset. So we calculate 15 most common value among each columns:
+At this part we merge pricinpals to the movies they are in, and calculate the weighted average rating for each actor, actress and director.
 
 ```{r}
-imdb_mv_cleaned %>%
-  mutate_all(~as.character(.)) %>%
-  pivot_longer(1:ncol(.)) %>%
-  group_by(name, value) %>%
-  summarise(nunique = n()) %>%
-  group_by(name) %>%
-  arrange(-nunique) %>%
-  slice(1:15) %>%
-  get_DT(default_show = 7)
-```
-
-  - Apparently, `\N`, for example, is likely to be one kind of tag for missing value among:
-
-  ```r
-  SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
-  ```
-
-- Delete movie start at 2022 or later.
-
-```{r}
-SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
-imdb_mv_cleaned %>%
-  mutate_all( ~ifelse(. %in% SIGN_of_MISSING, NA, .) ) %>%
-  mutate(isAdult = ifelse(isAdult %in% c('0', '1'), isAdult, NA),
-         startYear = as.numeric(startYear)) %>%
-  filter(startYear <= 2021) %>%
-  select(-RealeaseYear) -> imdb_mv_cleaned_2
-
+load(file="data/processing/imdb_people.RData")
+bind_rows(imdb_people) %>%
+  get_DT(default_show = 5)
 ```
 
 
 
 
-- Noted that the `genres` column is not cleaned data type. Therefore, we
 
-  - create a `mainGenres` column to represent the main genres of the movie.
-  
-  - create a one-to-many mapping table for each movie in order to analysis, e.g, aveage votes for each genres.
+### Merge `Movie/genres`-wised data
 
 
+Noted that the `genres` column is not cleaned data type. Therefore, we
+
+ 
+ 
 ```{r,eval=FALSE}
 imdb_mv_cleaned_2 %>% 
   select(tconst, genres, numVotes) %>%
@@ -324,7 +347,7 @@ imdb_mv_cleaned_2 %>%
 
 imdb_mv_cleaned_2 %>%
   separate(genres, 
-           into = c("mainGenres", "secondGneres", "thirdGenres"),
+           into = c("mainGenres", "secondGenres", "thirdGenres"),
            sep = ",") -> imdb_pure
 
 imdb_pure %>%
@@ -346,7 +369,28 @@ save(movie_genre_map, file = "data/processing/movie_genre_map.RData" )
 save(imdb_pure, file = "data/processing/imdb(cleaned).RData")
 save(geners_type_map, geners_type_map_2, file = "data/processing/genres_mappers.RData")
 ```
+ 
+- create a `mainGenres` column to represent the main genres of the movie.
+ 
+```{r}
+load(file = "data/processing/imdb(cleaned).RData")
+imdb_pure %>%
+  select(tconst, contains("enre"))
+```
+ 
+- create a one-to-many mapping table for each movie in order to analysis, e.g, aveage votes for each genres.
 
+```{r}
+load(file = "data/processing/movie_genre_map.RData" )
+movie_genre_map %>%
+  head(100) %>%
+  arrange(tconst) %>%
+  get_DT(default_show = 5)
+```
+
+## Create d3 data
+
+Lastly, we calculate the all-time best movies, the result is stored in `data/processing/d3input.csv`.
 
 ```{r,eval=FALSE}
 load(file = "data/processing/imdb(cleaned).RData")
@@ -368,6 +412,7 @@ for(year in 1933:2021){
 }
 
 bind_rows(cum_best_10) -> datarows
+
 write.csv(datarows, "data/processing/d3input.csv",row.names=F)
 write(c("var movie_data = ["), "data/processing/d3input.txt", append=F)
 for(i in 1:(nrow(datarows)-1)){
@@ -394,3 +439,5 @@ write(
 )
 write("];", "data/processing/d3input.txt", append=T)
 ```
+
+

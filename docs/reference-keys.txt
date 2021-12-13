@@ -32,3 +32,13 @@ genre的影响
 not-genre
 popularity
 title-pattern
+input-data-file
+use-movie-original-name-year-to-map-to-tconst
+use-movie-akasdrop-punct-year-to-map-to-tconst
+not-the-best-only-use-name-and-use-num-votes-to-determine-which-one-it-refers-to.
+worst-fuzzy-matching-name-year---like-star-wars-ep.-vii-the-force-awakens-with-star-wars-episode-vii
+merge-preprocess-data
+merge-movie-wised-data
+merge-person-wised-data
+merge-moviegenres-wised-data
+create-d3-data
