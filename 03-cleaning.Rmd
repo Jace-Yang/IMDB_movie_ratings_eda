@@ -421,7 +421,7 @@ for(i in 1:(nrow(datarows)-1)){
     paste0('    {year:', pull(datarow, 1),
         ',name:"', pull(datarow, 2),'"',
         ',genre:"', pull(datarow, 4),'"',
-        ',box_offics:', pull(datarow, 3),
+        ',box_offices:', pull(datarow, 3),
         '},'),
     "data/processing/d3input.txt",
     append=T

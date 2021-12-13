@@ -24,7 +24,7 @@
 <meta name="author" content="Jace Yang, Meggie Wen" />
 
 
-<meta name="date" content="2021-12-12" />
+<meta name="date" content="2021-12-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -77,19 +77,15 @@
 <li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data sources</a></li>
 <li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="data-transformation.html"><a href="data-transformation.html#data-file"><i class="fa fa-check"></i><b>3.1</b> Data file</a>
-<ul>
-<li class="chapter" data-level="3.1.1" data-path="data-transformation.html"><a href="data-transformation.html#basic-data"><i class="fa fa-check"></i><b>3.1.1</b> basic data</a></li>
-<li class="chapter" data-level="3.1.2" data-path="data-transformation.html"><a href="data-transformation.html#rating-data"><i class="fa fa-check"></i><b>3.1.2</b> Rating data</a></li>
-<li class="chapter" data-level="3.1.3" data-path="data-transformation.html"><a href="data-transformation.html#budget-data"><i class="fa fa-check"></i><b>3.1.3</b> Budget data</a></li>
-</ul></li>
-<li class="chapter" data-level="3.2" data-path="data-transformation.html"><a href="data-transformation.html#merge-data"><i class="fa fa-check"></i><b>3.2</b> Merge Data</a>
+<li class="chapter" data-level="3.1" data-path="data-transformation.html"><a href="data-transformation.html#input-data-file"><i class="fa fa-check"></i><b>3.1</b> Input data file</a></li>
+<li class="chapter" data-level="3.2" data-path="data-transformation.html"><a href="data-transformation.html#merge-preprocess-data"><i class="fa fa-check"></i><b>3.2</b> Merge &amp; Preprocess Data</a>
 <ul>
 <li class="chapter" data-level="3.2.1" data-path="data-transformation.html"><a href="data-transformation.html#limit-the-scope"><i class="fa fa-check"></i><b>3.2.1</b> Limit the scope</a></li>
-<li class="chapter" data-level="3.2.2" data-path="data-transformation.html"><a href="data-transformation.html#join-all-table"><i class="fa fa-check"></i><b>3.2.2</b> Join all table</a></li>
+<li class="chapter" data-level="3.2.2" data-path="data-transformation.html"><a href="data-transformation.html#merge-movie-wised-data"><i class="fa fa-check"></i><b>3.2.2</b> Merge <code>movie</code>-wised data</a></li>
+<li class="chapter" data-level="3.2.3" data-path="data-transformation.html"><a href="data-transformation.html#merge-person-wised-data"><i class="fa fa-check"></i><b>3.2.3</b> Merge <code>person</code>-wised data</a></li>
+<li class="chapter" data-level="3.2.4" data-path="data-transformation.html"><a href="data-transformation.html#merge-moviegenres-wised-data"><i class="fa fa-check"></i><b>3.2.4</b> Merge <code>Movie/genres</code>-wised data</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="data-transformation.html"><a href="data-transformation.html#data-preprocess"><i class="fa fa-check"></i><b>3.3</b> Data Preprocess</a></li>
-<li class="chapter" data-level="3.4" data-path="data-transformation.html"><a href="data-transformation.html#missing-value-recognition"><i class="fa fa-check"></i><b>3.4</b> Missing value recognition</a></li>
+<li class="chapter" data-level="3.3" data-path="data-transformation.html"><a href="data-transformation.html#create-d3-data"><i class="fa fa-check"></i><b>3.3</b> Create d3 data</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a>
 <ul>
@@ -108,9 +104,18 @@
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a>
 <ul>
 <li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#long-tail-effect-minority-make-up-majority"><i class="fa fa-check"></i><b>5.1</b> Long tail effect: minority make up majority</a></li>
-<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#what-specific-features-do-movies-with-higher-profitability-have"><i class="fa fa-check"></i><b>5.2</b> What specific features do movies with higher profitability have?</a></li>
-<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#what-contributes-to-higher-rating-films"><i class="fa fa-check"></i><b>5.3</b> What contributes to higher-rating films?</a></li>
-<li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off"><i class="fa fa-check"></i><b>5.4</b> Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</a></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#all-time-best"><i class="fa fa-check"></i><b>5.2</b> All time best</a></li>
+<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#what-specific-features-do-movies-with-higher-profitability-have"><i class="fa fa-check"></i><b>5.3</b> What specific features do movies with higher profitability have?</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="results.html"><a href="results.html#genre的影响"><i class="fa fa-check"></i><b>5.3.1</b> Genre的影响</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#what-contributes-to-higher-rating-films"><i class="fa fa-check"></i><b>5.4</b> What contributes to higher-rating films?</a>
+<ul>
+<li class="chapter" data-level="5.4.1" data-path="results.html"><a href="results.html#not-genre"><i class="fa fa-check"></i><b>5.4.1</b> Not Genre</a></li>
+<li class="chapter" data-level="5.4.2" data-path="results.html"><a href="results.html#popularity"><i class="fa fa-check"></i><b>5.4.2</b> Popularity</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="results.html"><a href="results.html#title-pattern"><i class="fa fa-check"></i><b>5.5</b> Title Pattern</a></li>
+<li class="chapter" data-level="5.6" data-path="results.html"><a href="results.html#is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off"><i class="fa fa-check"></i><b>5.6</b> Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
@@ -251,7 +256,7 @@
 ##                                  True Detective 
 ##                                               0</code></pre></li>
 <li><p>By rows &amp; columns: we pick the 50 most popularly voted pieces of work, and check their missingness among all colomns:</p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-9-1.png" width="768" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-9-1.png" width="768" style="display: block; margin: auto;" /></p>
 <ol style="list-style-type: decimal">
 <li><p>Utmost 1 column is missing in these rows, which indicates that IMDB, who makes the data of popular videos available to public, has done a good job collecting them!</p></li>
 <li><p>NA in <code>endYear</code> is especially frequent.</p>
@@ -266,7 +271,7 @@
 <div id="missing-pattern-summary" class="section level3" number="4.2.1">
 <h3><span class="header-section-number">4.2.1</span> Missing pattern summary</h3>
 <p>Then we draw the missing value plot we coded from the Problem Set 4.</p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-10-1.png" width="864" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-10-1.png" width="864" style="display: block; margin: auto;" /></p>
 <p>The most prevalent missing pattern is indeed the missing endYear, accounting for about 70% of the cases, which is driven by the fact that the <code>endYear</code> variable is missing in nearly all of the samples. In addition, <code>runtimeMinutes</code> and <code>endYear</code> are frequently absent simultaneously, whereas <code>genres</code> and <code>startYear</code> are missing in minor amounts.</p>
 </div>
 <div id="heatmap" class="section level3" number="4.2.2">
@@ -275,7 +280,7 @@
 <!-- x <- missing_data.frame(imdb_mostvotes) -->
 <!-- image(x) -->
 <!-- ``` -->
-<p><img src="finalproj_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-11-1.png" width="912" style="display: block; margin: auto;" /></p>
 <ul>
 <li>We generated a heatmap based on the 50 most-voted works. All of the missings are for endYear with <em>True Detective</em> as an exception because only TV series has an endYear.</li>
 <li>Compared with other popular films, <em>True Detective</em> has fewer number of votes, but a relatively high <code>averageRating</code> and <code>runtimeMinutes</code>. Long running time matches the nature of TV series.</li>
@@ -290,7 +295,7 @@
 <blockquote>
 <p>Since the number of new movies vary a lot by years, we take a look into the missing ratios rather than values.</p>
 </blockquote>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-12-1.png" width="912" style="display: block; margin: auto;" /></p>
 <ul>
 <li><p>From the first figure, we can see that the number of works is increasing by years (except for 2020 because of COVID-19). From the following 2 graphs, we can see that the amount of missing data for <code>runtimeMinutes</code> and <code>genres</code> are quite volatile.</p>
 <ul>
@@ -302,7 +307,7 @@
 <div id="missing-by-genres" class="section level3" number="4.3.2">
 <h3><span class="header-section-number">4.3.2</span> Missing by Genres</h3>
 <p>Let take a deeper look at the missing values of runtime by each of their genre to see if there are some patterns here:</p>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-13-1.png" width="912" style="display: block; margin: auto;" /></p>
 <ul>
 <li><p>We can see a significant difference between <code>genres</code>:</p>
 <ul>
