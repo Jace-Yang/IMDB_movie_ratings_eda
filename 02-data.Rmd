@@ -1,19 +1,21 @@
 # Data sources
 
-Our main data source is obtained from https://www.imdb.com/interfaces/,  a daily updated movie dataset that contains massive information about 258k+ films: 
+Our main data source is obtained from https://www.imdb.com/interfaces/, a daily updated movie dataset collected by [IMDB](https://www.imdb.com/). They made these subsets of IMDb data available for access to customers for personal and non-commercial use, but didn't reveal the way they collected.
 
-- Basics: genres, runtimes, starting year, is for adult or not, language, region ···
+Compared to other [options](https://imerit.net/blog/13-best-movie-data-sets-for-machine-learning-projects-all-pbm/) like [TMDB Database API](https://developers.themoviedb.org/3/getting-started), the one in IMDB can be directly download, up-to-date, and follows standard database format with id to each person, movie, and even episode.
 
-- Crews: directors, writers ···
+This dataset contains massive information about 258k+ films: 
 
-- Principal cast: category, role, characters as well as their birth year, profession ···
+- `Basics`: genres, runtimes, starting year, is for adult or not, language, region ···
 
-- Rating: average rating on IMDB,  number of votes ···
+- `Crews`: directors, writers ···
 
-Other than that, we also utilize several external data sources to combine features about movies’: 
+- `Principal cast`: category, role, characters as well as their birth year, profession ···
 
-- Budget: https://www.the-numbers.com/movie/budgets/all
+- `Rating`: average rating on IMDB,  number of votes ···
 
-- Box office: https://www.the-numbers.com/box-office-records/worldwide/all-movies/cumulative/all-time
+Other than that, we also use an external data sources [numbers](https://www.the-numbers.com/) to combine commercial statistics of 6,000+ movies released to theaters: 
 
-- Review: https://ai.stanford.edu/~amaas/data/sentiment/
+- `Budget`: https://www.the-numbers.com/movie/budgets/all
+
+- `Box office`: https://www.the-numbers.com/box-office-records/worldwide/all-movies/cumulative/all-time

@@ -6,30 +6,48 @@ source("srcs/helpers.R")
 
 ## Data file
 
-```{r}
+```{r,eval=FALSE}
 name.basics = fread(file = 'data/input/name.basics.tsv')
 principals = fread(file = 'data/input/title.principals.tsv')
 #episode = fread(file = 'data/input/title.episode.tsv')
 #crew = fread(file = 'data/input/title.crew.tsv') # director and writer!
 ratings = fread('data/input/title.ratings.tsv')
 basics <- fread('data/input/title.basics.tsv')
+
+name.basics %>% head(100) -> name.basics_head
+principals %>% head(100) -> principals_head
+ratings %>% head(100) -> ratings_head
+basics %>% head(100) -> basics_head
+
+save(name.basics_head, principals_head, ratings_head, basics_head,
+     file = "data/processing/data_samples.RData")
+```
+
+```{r}
+load(file = "data/processing/data_samples.RData")
 ```
 
 ### basic data
 
 ```{r}
-basics %>%
-  head(100) %>%
+basics_head %>% 
   get_DT(default_show = 5)
 ```
 
 ### Rating data
 
 ```{r}
-ratings %>%
-  head(100) %>%
+ratings_head %>%
   get_DT(default_show = 5)
 ```
+
+### Crew data
+```{r}
+principals_head %>%
+  get_DT(default_show = 5)
+```
+
+
 
 ### Budget data
 
@@ -40,12 +58,7 @@ budget %>%
   get_DT(default_show = 5)
 ```
 
-### Crew data
-```{r}
-crew %>%
-  head(100) %>%
-  get_DT(default_show = 5)
-```
+
 
 
 
@@ -116,6 +129,8 @@ budget %<>%
   )) %>%
   select(-c(ReleaseDate2, ReleaseDate3)) %>%
   mutate(movie_pure_name = tolower(gsub('[[:space:]]+|[[:punct:]]+', '', Movie)))
+
+
 
 akas %>%
    transmute(tconst = titleId, 
@@ -219,9 +234,13 @@ imdb_mv %>%
                      ROI = WorldwideGross / ProductionBudget) ) %>% as.data.frame() %>% arrange(-numVotes) -> imdb_mv_cleaned
 ```
 
+
+
+
+
 Add crew and priciples
 
-```{r}
+```{r,eval=FALSE}
 library(magick)
 library(cowplot)
 
@@ -277,7 +296,7 @@ imdb_mv_cleaned %>%
 
 - Delete movie start at 2022 or later.
 
-```{r, eval=FALSE}
+```{r}
 SIGN_of_MISSING <- c('\\N', "", "[]", "	#N/A", "#N/A")
 imdb_mv_cleaned %>%
   mutate_all( ~ifelse(. %in% SIGN_of_MISSING, NA, .) ) %>%
@@ -311,7 +330,54 @@ imdb_mv_cleaned_2 %>%
   separate(genres, 
            into = c("mainGenres", "secondGneres", "thirdGenres"),
            sep = ",") -> imdb_pure
+```
 
+```{r,eval=FALSE}
 save(imdb_pure, file = "data/processing/imdb(cleaned).RData")
 ```
 
+
+
+```{r,eval=FALSE}
+budget_tconst_mapper %>%
+  mutate_at(c("ProductionBudget", "DomesticGross", "WorldwideGross"), 
+            ~ str_remove_all(., "\\$|,") %>% as.numeric()) %>%
+  left_join(imdb_pure) %>%
+  select(RealeaseYear, Movie, WorldwideGross, Genre = mainGenres) -> temp
+
+cum_best_10 = list()
+for(year in 1933:2021){
+  temp %>%
+    filter(RealeaseYear <= year) %>%
+    arrange(-WorldwideGross) %>%
+    slice(1:10)  %>%
+    mutate(RealeaseYear = year) -> cum_best_10[[as.character(year)]]
+}
+
+bind_rows(cum_best_10) -> datarows
+write.csv(datarows, "data/processing/d3input.csv",row.names=F)
+write(c("var movie_data = ["), "data/processing/d3input.txt", append=F)
+for(i in 1:(nrow(datarows)-1)){
+  datarow = datarows %>% slice(i)
+  write(
+    paste0('    {year:', pull(datarow, 1),
+        ',name:"', pull(datarow, 2),'"',
+        ',genre:"', pull(datarow, 4),'"',
+        ',box_offics:', pull(datarow, 3),
+        '},'),
+    "data/processing/d3input.txt",
+    append=T
+  )
+}
+datarow = datarows %>% slice(nrow(datarows))
+write(
+  paste0('    {year:', pull(datarow, 1),
+      ',name:"', pull(datarow, 2),'"',
+      ',genre:"', pull(datarow, 4),'"',
+      ',box_offics:', pull(datarow, 3),
+      '}'),
+  "data/processing/d3input.txt",
+  append=T
+)
+write("];", "data/processing/d3input.txt", append=T)
+```

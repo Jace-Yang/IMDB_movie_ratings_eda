@@ -3,7 +3,6 @@
 .Ruserdata
 .DS_Store
 .tsv
-.csv
 data/input/name.basics.tsv
 data/input/test.csv
 data/input/title.akas.tsv
