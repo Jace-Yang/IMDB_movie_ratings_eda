@@ -422,8 +422,7 @@ budget_tconst_mapper %>%
   mutate_at(c("ProductionBudget", "DomesticGross", "WorldwideGross"), 
             ~ str_remove_all(., "\\$|,") %>% as.numeric()) %>%
   left_join(imdb_pure) %>%
-  left_join(geners_type_map_2, by = c("mainGenres" = "genres")) %>% 
-  select(RealeaseYear, Movie, WorldwideGross, genres = Genres_type) -> temp
+  select(RealeaseYear, Movie, WorldwideGross, genres = mainGenres) -> temp
 
 cum_best_10 = list()
 for(year in 1933:2021){
@@ -435,7 +434,19 @@ for(year in 1933:2021){
 }
 
 bind_rows(cum_best_10) -> datarows
-
+datarows %<>% 
+  left_join(
+    datarows %>%
+      group_by(genres) %>%
+      summarise(n = sum(WorldwideGross, na.rm=T)) %>%
+      mutate(genres_type = ifelse(min_rank(-n) <=10, 
+                                 genres, 
+                                 "Others") %>%
+                            factor %>% 
+                            fct_relevel("Others", after=Inf)) %>%
+      select(-n)) %>%
+  mutate(genres = genres_type) %>% select(-genres_type)
+  
 write.csv(datarows, "data/processing/d3input.csv",row.names=F)
 write(c("var movie_data = ["), "data/processing/d3input.txt", append=F)
 for(i in 1:(nrow(datarows)-1)){
@@ -448,7 +459,7 @@ for(i in 1:(nrow(datarows)-1)){
         '},'),
     "data/processing/d3input.txt",
     append=T
-  )
+  ) 
 }
 datarow = datarows %>% slice(nrow(datarows))
 write(
