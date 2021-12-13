@@ -2,6 +2,7 @@
 title: "IMDB Movies Rating Analysis"
 author: "Jace Yang, Meggie Wen"
 date: "`r Sys.Date()`"
+output: downbook::gitbook
 site: bookdown::bookdown_site
 ---
 

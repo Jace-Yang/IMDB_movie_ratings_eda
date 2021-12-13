@@ -12,6 +12,9 @@ ggrepel
 GGally
 plotly
 stringr
+data.table
+Matrix
+mi
 ggpubr
 rlang
 PupillometryR
@@ -29,11 +32,9 @@ usdata
 openintro
 gridGraphics
 gridExtra
-data.table
 DT
 htmlwidgets
-Matrix
-mi
+cowplot
 wordcloud2
 stopwords
 sylly

@@ -9,7 +9,7 @@ editor_options:
 source("srcs/helpers.R")
 load(file = "data/processing/imdb(cleaned).RData")
 imdb_pure -> imdb
-load(file="data/processing/imdb_people")
+load(file="data/processing/imdb_people.RData")
 load(file = "data/processing/movie_genre_map.RData" )
 load(file = "data/processing/genres_mappers.RData")
 ```
@@ -49,7 +49,7 @@ ggplot() +
 
 imdb %>%
   #sample_frac(0.1) %>%
-  left_join(df_geners) %>%
+  left_join(geners_type_map) %>%
  
 ggplot() +
   aes(x = factor(startYear)) + #
@@ -68,7 +68,7 @@ ggplot() +
 
 imdb %>%
   #sample_frac(0.1) %>%
-  left_join(df_geners) %>%
+  left_join(geners_type_map) %>%
   
 ggplot() +
   aes(y = numVotes, 
@@ -125,7 +125,7 @@ tibble(`%` = c(0, 0.25, 0.50, 0.75, 0.8, 0.85, 0.9, 0.95, 0.97, 0.99, 0.995, 0.9
 
   - For example, I asked several friends and none of them ever heard of [The Golden Chance](https://www.imdb.com/title/tt0084861/), which receives 666	 votes and this number is higher than 85% of the movies in the entire imdb database.
 
-## All time best
+## Who makes best movies
 ```{r, fig.width = 8.54, fig.height=12}
 imdb_people$`actor & actress` %>%
   mutate(primaryName = fct_reorder(primaryName, weighted_avg_rating)) %>%
@@ -144,7 +144,7 @@ lookup_actor <- function(name_nums){
     #print(result)
     #print(name_num)
     if(!is.na(name_num) & name_num>=1 & name_num<=30){
-      result = c(result, as.character(temp$primaryName[31-name_num]))
+      result = c(result, as.character(temp1$primaryName[31-name_num]))
     }else{
       result = c(result, "")
     }
@@ -153,16 +153,16 @@ lookup_actor <- function(name_nums){
   return(result)
 }
 
-ggplot(temp) +
+ggplot(temp1) +
   aes(y = num,
       x = weighted_avg_rating
       ) +
-  scale_x_continuous(limits = c(min(temp$weighted_avg_rating) - 0.08, max(temp$weighted_avg_rating)), expand = c(0.06694, 0)) +
+  scale_x_continuous(limits = c(min(temp1$weighted_avg_rating) - 0.08, max(temp1$weighted_avg_rating)), expand = c(0.06694, 0)) +
   scale_y_continuous(breaks = breaks_width(1), label = lookup_actor, expand = c(0,0), limits = c(0.01, 30.99) ) +
   theme_jace + only_x  -> p
 
-for(i in 1:nrow(temp)){
-  name_id = pull(temp[i, "nconst"])
+for(i in 1:nrow(temp1)){
+  name_id = pull(temp1[i, "nconst"])
 
   if(file.exists(paste0("data/images/", name_id, ".jpg"))){
    image_path =  paste0("data/images/", name_id, ".jpg")
@@ -176,7 +176,7 @@ for(i in 1:nrow(temp)){
                  hjust = 0.5,
                  vjust = 0.5,
                  #x = pull(temp[i, "weighted_avg_rating"]),
-                 x = min(temp$weighted_avg_rating) - 0.1,
+                 x = min(temp1$weighted_avg_rating) - 0.1,
                  height = 0.88) -> p
 }
 p + geom_point() -> p_actor
@@ -305,7 +305,7 @@ p_actor | p_director
 
 ## What specific features do movies with higher profitability have?
 
-### Genre的影响
+### Genres effect
 
 
 ```{r}
@@ -337,17 +337,17 @@ ggplot() +
   scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(geners_type_map_2 %>% distinct(Genres_type) %>% nrow)) +
   scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(geners_type_map_2 %>% distinct(Genres_type) %>% nrow)) #+
   
-  guides(fill = guide_legend(title = "Type of verification of the applicant's income",
-                             direction = "horizontal",
-                             reverse = T),
-         color = guide_legend(title = "Type of verification of the applicant's income",
-                              direction = "horizontal",
-                              reverse = T)) +
-  labs(x = "",
-       title = "Raincloud Plot of loan amount by 3 different verified income status") +
-  theme_jace +
-  only_x +
-  theme(legend.position = "bottom") -> p
+  # guides(fill = guide_legend(title = "Type of verification of the applicant's income",
+  #                            direction = "horizontal",
+  #                            reverse = T),
+  #        color = guide_legend(title = "Type of verification of the applicant's income",
+  #                             direction = "horizontal",
+  #                             reverse = T)) +
+  # labs(x = "",
+  #      title = "Raincloud Plot of loan amount by 3 different verified income status") +
+  # theme_jace +
+  # only_x +
+  # theme(legend.position = "bottom") -> p
 ```
 
 - First, we can use the budget data provided by the-numbers to estimate the cost, and then combine it with box offices to calculate the revenue of each movie.
@@ -432,17 +432,17 @@ ggplot() +
   scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler) +
   scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) +
   scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) #+
-  guides(fill = guide_legend(title = "Type of verification of the applicant's income",
-                             direction = "horizontal",
-                             reverse = T),
-         color = guide_legend(title = "Type of verification of the applicant's income",
-                              direction = "horizontal",
-                              reverse = T)) +
-  labs(x = "",
-       title = "Raincloud Plot of loan amount by 3 different verified income status") +
-  theme_jace +
-  only_x +
-  theme(legend.position = "bottom") -> p
+  # guides(fill = guide_legend(title = "Type of verification of the applicant's income",
+  #                            direction = "horizontal",
+  #                            reverse = T),
+  #        color = guide_legend(title = "Type of verification of the applicant's income",
+  #                             direction = "horizontal",
+  #                             reverse = T)) +
+  # labs(x = "",
+  #      title = "Raincloud Plot of loan amount by 3 different verified income status") +
+  # theme_jace +
+  # only_x +
+  # theme(legend.position = "bottom") -> p
 ```
 
 
@@ -493,27 +493,27 @@ ggplot() +
 p1 | p2 
   
 
-  geom_boxplot(width = .25,
-               outlier.shape = NA,
-               alpha = 0.5) +
-  geom_flat_violin(position = position_nudge(x = .2),
-                   alpha = 0.7,
-                   adjust = 1) +
-  scale_x_discrete(expand = c(0,0)) +
-  scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler) +
-  scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) +
-  scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) #+
-  guides(fill = guide_legend(title = "Type of verification of the applicant's income",
-                             direction = "horizontal",
-                             reverse = T),
-         color = guide_legend(title = "Type of verification of the applicant's income",
-                              direction = "horizontal",
-                              reverse = T)) +
-  labs(x = "",
-       title = "Raincloud Plot of loan amount by 3 different verified income status") +
-  theme_jace +
-  only_x +
-  theme(legend.position = "bottom") -> p
+  # geom_boxplot(width = .25,
+  #              outlier.shape = NA,
+  #              alpha = 0.5) +
+  # geom_flat_violin(position = position_nudge(x = .2),
+  #                  alpha = 0.7,
+  #                  adjust = 1) +
+  # scale_x_discrete(expand = c(0,0)) +
+  # scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler) +
+  # scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) +
+  # scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) #+
+  # guides(fill = guide_legend(title = "Type of verification of the applicant's income",
+  #                            direction = "horizontal",
+  #                            reverse = T),
+  #        color = guide_legend(title = "Type of verification of the applicant's income",
+  #                             direction = "horizontal",
+  #                             reverse = T)) +
+  # labs(x = "",
+  #      title = "Raincloud Plot of loan amount by 3 different verified income status") +
+  # theme_jace +
+  # only_x +
+  # theme(legend.position = "bottom") -> p
 
 ```
 
@@ -600,34 +600,34 @@ ggplot() +
   get_lightxy(0.75)
 
 
-  #scale_fill_continuous(low = "grey80", high = "#09005F", breaks = pretty_breaks(8)) 
-  scale_fill_viridis_c(direction = -1, option = 1) +
-  scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler, limits = c(NA, 10)) +
-  scale_x_continuous(breaks = pretty_breaks(8), labels = axis_unit_scaler_1) +
-  theme_jace +
-  get_lightxy(0.75) 
-
-
-
-  geom_boxplot(width = .25,
-               outlier.shape = NA,
-               alpha = 0.5) +
-  geom_flat_violin(position = position_nudge(x = .2),
-                   alpha = 0.7,
-                   adjust = 1) +
-  scale_x_discrete(expand = c(0,0)) +
-  scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler) +
-  scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) +
-  scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) #+
-  guides(fill = guide_legend(title = "Type of verification of the applicant's income",
-                             direction = "horizontal",
-                             reverse = T),
-         color = guide_legend(title = "Type of verification of the applicant's income",
-                              direction = "horizontal",
-                              reverse = T)) +
-  labs(x = "",
-       title = "Raincloud Plot of loan amount by 3 different verified income status") +
-  theme_jace +
-  only_x +
-  theme(legend.position = "bottom") -> p
+  # #scale_fill_continuous(low = "grey80", high = "#09005F", breaks = pretty_breaks(8)) 
+  # scale_fill_viridis_c(direction = -1, option = 1) +
+  # scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler, limits = c(NA, 10)) +
+  # scale_x_continuous(breaks = pretty_breaks(8), labels = axis_unit_scaler_1) +
+  # theme_jace +
+  # get_lightxy(0.75) 
+  # 
+  # 
+  # 
+  # geom_boxplot(width = .25,
+  #              outlier.shape = NA,
+  #              alpha = 0.5) +
+  # geom_flat_violin(position = position_nudge(x = .2),
+  #                  alpha = 0.7,
+  #                  adjust = 1) +
+  # scale_x_discrete(expand = c(0,0)) +
+  # scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler) +
+  # scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) +
+  # scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) #+
+  # guides(fill = guide_legend(title = "Type of verification of the applicant's income",
+  #                            direction = "horizontal",
+  #                            reverse = T),
+  #        color = guide_legend(title = "Type of verification of the applicant's income",
+  #                             direction = "horizontal",
+  #                             reverse = T)) +
+  # labs(x = "",
+  #      title = "Raincloud Plot of loan amount by 3 different verified income status") +
+  # theme_jace +
+  # only_x +
+  # theme(legend.position = "bottom") -> p
 ```

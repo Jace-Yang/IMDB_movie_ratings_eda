@@ -34,6 +34,7 @@ if(!require(PupillometryR)) install.packages("PupillometryR")
 if(!require(ggridges)) install.packages("ggridges")
 if(!require(RColorBrewer)) install.packages("RColorBrewer")
 if(!require(magrittr)) install.packages("magrittr") # allow %<>%
+if(!require(cowplot)) install.packages("cowplot")
 
 if(!require(vcd)) install.packages("vcd")
 if(!require(d3r)) install.packages("d3r")
