@@ -24,7 +24,7 @@
 <meta name="author" content="Jace Yang, Meggie Wen" />
 
 
-<meta name="date" content="2021-11-19" />
+<meta name="date" content="2021-12-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -73,6 +73,13 @@
 <script src="libs/selectize-0.12.0/selectize.min.js"></script>
 <link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="libs/parallel-coordinates-2.1.8/parcoords.css" rel="stylesheet" />
+<script src="libs/parcoords-binding-1.0.0/parcoords.js"></script>
+<script src="libs/d3-5.16.0/d3.min.js"></script>
+<link href="libs/wordcloud2-0.0.1/wordcloud.css" rel="stylesheet" />
+<script src="libs/wordcloud2-0.0.1/wordcloud2-all.js"></script>
+<script src="libs/wordcloud2-0.0.1/hover.js"></script>
+<script src="libs/wordcloud2-binding-0.2.2/wordcloud2.js"></script>
 
 
 <style type="text/css">
@@ -159,23 +166,48 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data sources</a></li>
-<li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a></li>
+<li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="data-transformation.html"><a href="data-transformation.html#input-data-file"><i class="fa fa-check"></i><b>3.1</b> Input data file</a></li>
+<li class="chapter" data-level="3.2" data-path="data-transformation.html"><a href="data-transformation.html#merge-preprocess-data"><i class="fa fa-check"></i><b>3.2</b> Merge &amp; Preprocess Data</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="data-transformation.html"><a href="data-transformation.html#limit-the-scope"><i class="fa fa-check"></i><b>3.2.1</b> Limit the scope</a></li>
+<li class="chapter" data-level="3.2.2" data-path="data-transformation.html"><a href="data-transformation.html#merge-movie-wised-data"><i class="fa fa-check"></i><b>3.2.2</b> Merge <code>movie</code>-wised data</a></li>
+<li class="chapter" data-level="3.2.3" data-path="data-transformation.html"><a href="data-transformation.html#merge-person-wised-data"><i class="fa fa-check"></i><b>3.2.3</b> Merge <code>person</code>-wised data</a></li>
+<li class="chapter" data-level="3.2.4" data-path="data-transformation.html"><a href="data-transformation.html#merge-moviegenres-wised-data"><i class="fa fa-check"></i><b>3.2.4</b> Merge <code>Movie/genres</code>-wised data</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="data-transformation.html"><a href="data-transformation.html#create-d3-data"><i class="fa fa-check"></i><b>3.3</b> Create d3 data</a></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#missing-value-recognition"><i class="fa fa-check"></i><b>4.1</b> Missing value recognition</a></li>
-<li class="chapter" data-level="4.2" data-path="missing-values.html"><a href="missing-values.html#missing-glance"><i class="fa fa-check"></i><b>4.2</b> Missing glance</a></li>
-<li class="chapter" data-level="4.3" data-path="missing-values.html"><a href="missing-values.html#missing-plot"><i class="fa fa-check"></i><b>4.3</b> Missing plot</a>
+<li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#missing-glance"><i class="fa fa-check"></i><b>4.1</b> Missing glance</a></li>
+<li class="chapter" data-level="4.2" data-path="missing-values.html"><a href="missing-values.html#missing-plot"><i class="fa fa-check"></i><b>4.2</b> Missing plot</a>
 <ul>
-<li class="chapter" data-level="4.3.1" data-path="missing-values.html"><a href="missing-values.html#missing-pattern-summary"><i class="fa fa-check"></i><b>4.3.1</b> Missing pattern summary</a></li>
-<li class="chapter" data-level="4.3.2" data-path="missing-values.html"><a href="missing-values.html#heatmap"><i class="fa fa-check"></i><b>4.3.2</b> Heatmap</a></li>
+<li class="chapter" data-level="4.2.1" data-path="missing-values.html"><a href="missing-values.html#missing-pattern-summary"><i class="fa fa-check"></i><b>4.2.1</b> Missing pattern summary</a></li>
+<li class="chapter" data-level="4.2.2" data-path="missing-values.html"><a href="missing-values.html#heatmap"><i class="fa fa-check"></i><b>4.2.2</b> Heatmap</a></li>
 </ul></li>
-<li class="chapter" data-level="4.4" data-path="missing-values.html"><a href="missing-values.html#insight-about-why-na-happens"><i class="fa fa-check"></i><b>4.4</b> Insight about why NA happens</a>
+<li class="chapter" data-level="4.3" data-path="missing-values.html"><a href="missing-values.html#insight-about-why-na-happens"><i class="fa fa-check"></i><b>4.3</b> Insight about why NA happens</a>
 <ul>
-<li class="chapter" data-level="4.4.1" data-path="missing-values.html"><a href="missing-values.html#missing-by-years"><i class="fa fa-check"></i><b>4.4.1</b> Missing by Years</a></li>
-<li class="chapter" data-level="4.4.2" data-path="missing-values.html"><a href="missing-values.html#missing-by-genres"><i class="fa fa-check"></i><b>4.4.2</b> Missing by Genres</a></li>
+<li class="chapter" data-level="4.3.1" data-path="missing-values.html"><a href="missing-values.html#missing-by-years"><i class="fa fa-check"></i><b>4.3.1</b> Missing by Years</a></li>
+<li class="chapter" data-level="4.3.2" data-path="missing-values.html"><a href="missing-values.html#missing-by-genres"><i class="fa fa-check"></i><b>4.3.2</b> Missing by Genres</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a></li>
+<li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#long-tail-effect-minority-make-up-majority"><i class="fa fa-check"></i><b>5.1</b> Long tail effect: minority make up majority</a></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#who-makes-best-movies"><i class="fa fa-check"></i><b>5.2</b> Who makes best movies</a></li>
+<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#what-specific-features-do-movies-with-higher-profitability-have"><i class="fa fa-check"></i><b>5.3</b> What specific features do movies with higher profitability have?</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="results.html"><a href="results.html#genres-effect"><i class="fa fa-check"></i><b>5.3.1</b> Genres effect</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#what-contributes-to-higher-rating-films"><i class="fa fa-check"></i><b>5.4</b> What contributes to higher-rating films?</a>
+<ul>
+<li class="chapter" data-level="5.4.1" data-path="results.html"><a href="results.html#not-genre"><i class="fa fa-check"></i><b>5.4.1</b> Not Genre</a></li>
+<li class="chapter" data-level="5.4.2" data-path="results.html"><a href="results.html#popularity"><i class="fa fa-check"></i><b>5.4.2</b> Popularity</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="results.html"><a href="results.html#title-pattern"><i class="fa fa-check"></i><b>5.5</b> Title Pattern</a></li>
+<li class="chapter" data-level="5.6" data-path="results.html"><a href="results.html#is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off"><i class="fa fa-check"></i><b>5.6</b> Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
 <li class="divider"></li>
