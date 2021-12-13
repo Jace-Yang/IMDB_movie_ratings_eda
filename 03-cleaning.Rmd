@@ -321,29 +321,42 @@ imdb_mv_cleaned %>%
 imdb_mv_cleaned_2 %>% 
   select(tconst, genres, numVotes) %>%
   separate_rows(genres, sep = ",") -> movie_genre_map
-save(movie_genre_map, file = "data/processing/movie_genre_map.RData" )
-rm(movie_genre_map)
-```
 
-```{r}
 imdb_mv_cleaned_2 %>%
   separate(genres, 
            into = c("mainGenres", "secondGneres", "thirdGenres"),
            sep = ",") -> imdb_pure
-```
 
-```{r,eval=FALSE}
+imdb_pure %>%
+  group_by(mainGenres) %>%
+  summarise(n = n()) %>%
+  arrange(-n) %>%
+  mutate(Genres_type = ifelse(min_rank(-n) <=10, mainGenres, "Others") %>%
+           factor %>% fct_relevel("Others", after=Inf)) -> geners_type_map
+
+movie_genre_map %>%
+  left_join(imdb_pure %>% select(tconst, averageRating, numVotes)) %>%
+  group_by(genres) %>%
+  summarise(n = sum(numVotes, na.rm=T)) %>%
+  arrange(-n) %>%
+  mutate(Genres_type = ifelse(min_rank(-n) <=10, genres, "Others") %>%
+           factor %>% fct_relevel("Others", after=Inf)) -> geners_type_map_2
+
+save(movie_genre_map, file = "data/processing/movie_genre_map.RData" )
 save(imdb_pure, file = "data/processing/imdb(cleaned).RData")
+save(geners_type_map, geners_type_map_2, file = "data/processing/genres_mappers.RData")
 ```
 
 
-
 ```{r,eval=FALSE}
+load(file = "data/processing/imdb(cleaned).RData")
+load(file = "data/processing/genres_mappers.RData")
 budget_tconst_mapper %>%
   mutate_at(c("ProductionBudget", "DomesticGross", "WorldwideGross"), 
             ~ str_remove_all(., "\\$|,") %>% as.numeric()) %>%
   left_join(imdb_pure) %>%
-  select(RealeaseYear, Movie, WorldwideGross, Genre = mainGenres) -> temp
+  left_join(geners_type_map_2, by = c("mainGenres" = "genres")) %>% 
+  select(RealeaseYear, Movie, WorldwideGross, genres = Genres_type) -> temp
 
 cum_best_10 = list()
 for(year in 1933:2021){
