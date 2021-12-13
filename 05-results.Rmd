@@ -8,33 +8,39 @@ editor_options:
 ```{r, include=FALSE}
 source("srcs/helpers.R")
 load(file = "data/processing/imdb(cleaned).RData")
+load(file="data/processing/imdb_people")
+load(file = "data/processing/movie_genre_map.RData" )
+
+imdb %>%
+  group_by(mainGenres) %>%
+  summarise(n = n()) %>%
+  arrange(-n) %>%
+  mutate(Genres_type = ifelse(min_rank(-n) <=10, mainGenres, "Others") %>%
+           factor %>% fct_relevel("Others", after=Inf)) -> geners_type_map
+
+movie_genre_map %>%
+  left_join(imdb %>% select(tconst, averageRating, numVotes)) %>%
+  group_by(genres) %>%
+  summarise(n = sum(numVotes, na.rm=T)) %>%
+  arrange(-n) %>%
+  mutate(Genres_type = ifelse(min_rank(-n) <=10, genres, "Others") %>%
+           factor %>% fct_relevel("Others", after=Inf)) -> geners_type_map_2
 ```
 
 
 
-In this project, we want to discover the contributing factors that make a movie more successful than others. So we have raised the following questions.
 
-- What specific features do movies with higher profitability have?
-
-- What contributes to higher-rating films?
-
-- Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?
 
 ## Long tail effect: minority make up majority
 
 First, lets talk about the votes contributed by.
 
 ```{r fig.width=9, fig.height=7.2}
-imdb %>%
-  group_by(mainGenres) %>%
-  summarise(n = n()) %>%
-  arrange(-n) %>%
-  mutate(Genres_type = ifelse(min_rank(-n) <=10, mainGenres, "Others") %>%
-           factor %>% fct_relevel("Others", after=Inf)) -> df_geners
+
 
 imdb %>%
   #sample_frac(0.1) %>%
-  left_join(df_geners) %>%
+  left_join(geners_type_map) %>%
 
 ggplot() +
   aes(x = factor(startYear),
@@ -123,37 +129,518 @@ tibble(`%` = c(0, 0.25, 0.50, 0.75, 0.8, 0.85, 0.9, 0.95, 0.97, 0.99, 0.995, 0.9
          `Number of movies >= Quantiles` = imdb %>% filter(numVotes >= `Quantiles of # of Votes`) %>% nrow(),
          `Examples` = imdb %>% filter(numVotes >= `Quantiles of # of Votes`) %>% arrange(numVotes) %>% slice(1:3) %>% summarise(title = paste0(primaryTitle, collapse = "<br/>")) %>% pull(title)) %>%
   ungroup %>%
-  mutate(`Examples` = gsub("The Golden Chance", 
-                           '<span style="background-color: #277cee44">The Golden Chance</span>', Examples)) %>%
+  mutate(`Examples` = gsub("Vice Squad", 
+                           '<span style="background-color: #277cee44">Vice Squad</span>', Examples)) %>%
   get_DT(button = F, default_show = 20)
 ```
 
 - It's not surprising to find out that over 90% of the movies do not have votes over 500. We consider 1000 as a threshold to determine the movie is at least not unknown to the general public.
 
-  - For example, I asked several friends and none of them ever heard of [The Golden Chance](https://www.imdb.com/title/tt0005402/), which receives 227 votes and this number is higher than 85% of the movies in the entire imdb database.
+  - For example, I asked several friends and none of them ever heard of [The Golden Chance](https://www.imdb.com/title/tt0084861/), which receives 666	 votes and this number is higher than 85% of the movies in the entire imdb database.
+
+## All time best
+```{r, fig.width = 8.54, fig.height=12}
+imdb_people$`actor & actress` %>%
+  mutate(primaryName = fct_reorder(primaryName, weighted_avg_rating)) %>%
+  arrange(desc(primaryName)) %>%
+  mutate(num = as.integer(primaryName)) -> temp1
+
+imdb_people$director %>%
+  mutate(primaryName = fct_reorder(primaryName, weighted_avg_rating)) %>%
+  arrange(desc(primaryName)) %>%
+  mutate(num = as.integer(primaryName)) -> temp2
+
+lookup_actor <- function(name_nums){
+  result = c()
+  
+  for(name_num in name_nums){
+    #print(result)
+    #print(name_num)
+    if(!is.na(name_num) & name_num>=1 & name_num<=30){
+      result = c(result, as.character(temp$primaryName[31-name_num]))
+    }else{
+      result = c(result, "")
+    }
+  }
+          
+  return(result)
+}
+
+ggplot(temp) +
+  aes(y = num,
+      x = weighted_avg_rating
+      ) +
+  scale_x_continuous(limits = c(min(temp$weighted_avg_rating) - 0.08, max(temp$weighted_avg_rating)), expand = c(0.06694, 0)) +
+  scale_y_continuous(breaks = breaks_width(1), label = lookup_actor, expand = c(0,0), limits = c(0.01, 30.99) ) +
+  theme_jace + only_x  -> p
+
+for(i in 1:nrow(temp)){
+  name_id = pull(temp[i, "nconst"])
+
+  if(file.exists(paste0("data/images/", name_id, ".jpg"))){
+   image_path =  paste0("data/images/", name_id, ".jpg")
+  }else{
+    image_path =  system.file("extdata", "logo.png", package = "cowplot")
+
+  }
+
+  p + draw_image(magick::image_transparent(magick::image_read(image_path), color = "white"),
+                 y = 31-i,
+                 hjust = 0.5,
+                 vjust = 0.5,
+                 #x = pull(temp[i, "weighted_avg_rating"]),
+                 x = min(temp$weighted_avg_rating) - 0.1,
+                 height = 0.88) -> p
+}
+p + geom_point() -> p_actor
+
+
+lookup_director <- function(name_nums){
+  result = c()
+  
+  for(name_num in name_nums){
+    #print(result)
+    #print(name_num)
+    if(!is.na(name_num) & name_num>=1 & name_num<=30){
+      result = c(result, as.character(temp2$primaryName[31-name_num]))
+    }else{
+      result = c(result, "")
+    }
+  }
+          
+  return(result)
+}
+
+ggplot(temp2) +
+  aes(y = num,
+      x = weighted_avg_rating) +
+  scale_x_continuous(limits = c(min(temp2$weighted_avg_rating) - 0.08, max(temp2$weighted_avg_rating)), expand = c(0.06694, 0)) +
+  scale_y_continuous(breaks = breaks_width(1), label = lookup_director, expand = c(0,0), limits = c(0.01, 30.99) ) +
+  theme_jace + only_x  -> p2
+
+for(i in 1:nrow(temp2)){
+  name_id = pull(temp2[i, "nconst"])
+
+  if(file.exists(paste0("data/images/", name_id, ".jpg"))){
+    image_path =  paste0("data/images/", name_id, ".jpg")
+  }else{
+    image_path =  system.file("extdata", "logo.png", package = "cowplot")
+  }
+
+  p2 + draw_image(magick::image_transparent(magick::image_read(image_path), color = "white"),
+                 y = 31-i,
+                 hjust = 0.5,
+                 vjust = 0.5,
+                 #x = pull(temp[i, "weighted_avg_rating"]),
+                 x = min(temp2$weighted_avg_rating) - 0.1,
+                 height = 0.88) -> p2
+}
+p2 + geom_point() -> p_director
+
+p_actor | p_director
+
+# ggplot() + 
+#   aes(x = 0, y=1:30) + 
+#   geom_point(alpha=0) +
+#   scale_x_continuous(breaks = 0, expand = c(0, 0.02)) +
+#   scale_y_continuous(breaks = breaks_width(1), label = lookup_name, expand = c(0,0), limits = c(0.01, 30.99) ) +
+#   theme_classic() +
+#  theme(plot.margin = unit(c(0,-2,0,0), "cm"),
+#        axis.text.x = element_blank(),
+#        axis.title = element_blank(),
+#        axis.line = element_line(),
+#        axis.line.x = element_line(),
+#       axis.title.x = element_text(color = "white"),
+#       axis.ticks.x = element_line(color = "white"),
+#       panel.grid.major = element_blank(),
+#       panel.grid.minor = element_blank(),
+#       panel.border = element_blank(),
+#       panel.background = element_blank()) +
+#   xlab("") -> p_yaxis
+# 
+# for(i in 1:nrow(temp)){
+#   name_id = pull(temp[i, "nconst"])
+# 
+#   if(file.exists(paste0("data/images/", name_id, ".jpg"))){
+#    image_path =  paste0("data/images/", name_id, ".jpg")
+#   }else{
+#     image_path =  system.file("extdata", "logo.png", package = "cowplot")
+# 
+#   }
+# 
+#   p_yaxis + draw_image(magick::image_transparent(magick::image_read(image_path), color = "white"),
+#                  y = 31-i,
+#                  hjust = 0.5,
+#                  vjust = 0.5,
+#                  #x = pull(temp[i, "weighted_avg_rating"]),
+#                  x = 0,
+#                  height = 0.88) -> p_yaxis
+# }
+# p + inset_element(
+#   p_yaxis,
+#   left = 0, 
+#   bottom = 0, 
+#   right = unit(1, "npc") - unit(150, "mm"), 
+#   top = unit(1, "npc"),
+#   align_to = "full"
+# )
+# 
+# #p_yaxis
+# p2 <- ggplotGrob(p) + 
+#   annotation_custom(
+#     grob = p_yaxis,
+#     xmin = 5,
+#     xmax = 6,
+#     ymin = 0,
+#     ymax = 30
+#   ) 
+# p_yaxis + p + plot_layout(design = "12222222")
+# 
+# g <- ggplotGrob(qplot(1, 1) +
+#                   theme(plot.background = element_rect(colour = "black")))
+# qplot(1:10, 1:10) +
+#   annotation_custom(
+#     grob = g,
+#     xmin = 1,
+#     xmax = 5,
+#     ymin = 5,
+#     ymax = 10
+#   ) +
+#   annotation_custom(
+#     grob = rectGrob(gp = gpar(fill = "white")),
+#     xmin = 7.5,
+#     xmax = Inf,
+#     ymin = -Inf,
+#     ymax = 5
+#   )
+# 
+```
 
 ## What specific features do movies with higher profitability have?
+
+### Genre的影响
+
+
+```{r}
+movie_genre_map %>%
+  left_join(imdb %>% select(tconst, averageRating, numVotes, WorldwideGross)) %>%
+  left_join(geners_type_map_2) %>%
+  #sample_frac(0.05) %>%
+  #group_by()
+  mutate(Genres_type = fct_reorder(Genres_type, -averageRating) %>%
+           fct_relevel("Others", after=Inf)) -> temp
+  
+temp %>%
+ggplot() +
+  aes(x = Genres_type,
+      y = WorldwideGross,
+      fill = Genres_type) +
+  # geom_point(aes(color = Genres_type),
+  #            position = position_jitter(w = .15),
+  #            size = 0.5,
+  #            alpha = 0.05) +
+  geom_boxplot(aes(outlier.colour = Genres_type),
+               width = .25,
+               #outlier.shape = NA,
+               alpha = 0.5) +
+  geom_flat_violin(position = position_nudge(x = .2),
+                   alpha = 0.7,
+                   adjust = 1) +
+  scale_y_continuous(breaks = pretty_breaks(10), labels = axis_unit_scaler_1) +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(geners_type_map_2 %>% distinct(Genres_type) %>% nrow)) +
+  scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(geners_type_map_2 %>% distinct(Genres_type) %>% nrow)) #+
+  
+  guides(fill = guide_legend(title = "Type of verification of the applicant's income",
+                             direction = "horizontal",
+                             reverse = T),
+         color = guide_legend(title = "Type of verification of the applicant's income",
+                              direction = "horizontal",
+                              reverse = T)) +
+  labs(x = "",
+       title = "Raincloud Plot of loan amount by 3 different verified income status") +
+  theme_jace +
+  only_x +
+  theme(legend.position = "bottom") -> p
+```
 
 - First, we can use the budget data provided by the-numbers to estimate the cost, and then combine it with box offices to calculate the revenue of each movie.
 
 - Through IMDB's main data, we can analyze the genres of movies, popularity of the star/director/screenwriter, or the runtime of  movies that can bring high profits.
+
+```{r}
+# 这里画 runtime budget popularity对 box的贡献！！！
+
+movie_genre_map %>%
+  left_join(imdb) %>%
+  left_join(geners_type_map_2) %>%
+  filter(!is.na(ROI)) %>%
+  group_by(genres) %>%
+  summarise(movies = n(),
+            first_movie_at = min(startYear),
+            runtimeMinutes = mean(as.integer(runtimeMinutes), na.rm=T),
+            ProductionBudget = mean(ProductionBudget, na.rm=T),
+            WorldwideGross = mean(WorldwideGross, na.rm=T),
+            Profit = mean(Profit, na.rm=T)) %>%
+  filter(movies > 10) %>%
+  mutate(ROI = Profit / ProductionBudget,
+         first_movie_at = case_when(
+           first_movie_at > 1960 ~ "After 1960s",
+           first_movie_at > 1930 ~ "1930s ~ 1960s",
+           first_movie_at > 1900 ~ "1900s ~ 1930s",
+           T ~ "1900s ~ 1960s",
+         )) %>%
+  relocate(first_movie_at, .after="genres") %>%
+  arrange(desc(genres)) %>%
+  mutate(genres = fct_rev(genres)) %>%
+
+ parcoords(
+    rownames = F
+    ,brushMode = "1d-axes"
+    ,reorderable = TRUE
+    ,queue = TRUE
+    ,color= list(
+       colorBy="first_movie_at"
+       , colorScale = "scaleOrdinal"
+       , colorScheme = "schemeCategory10"
+    )
+    ,withD3 = TRUE
+  )
+  
+```
+
+
 
 ## What contributes to higher-rating films?
 
 
 - In addition to using the same data as the first question, we can also use review data provided by Stanford to discover how people think when lots of people give high scores to a movie.
 
+### Not Genre
 
 ```{r}
+movie_genre_map %>%
+  left_join(imdb %>% select(tconst, averageRating, numVotes)) %>%
+  left_join(geners_type_map_2) %>%
+  sample_frac(0.05) %>%
+  #group_by()
+  mutate(Genres_type = fct_reorder(Genres_type, -averageRating) %>%
+           fct_relevel("Others", after=Inf)) -> temp
+  
+temp %>%
+ggplot() +
+  aes(x = Genres_type,
+      y = averageRating,
+      fill = Genres_type) +
+  geom_point(aes(color = Genres_type),
+             position = position_jitter(w = .15),
+             size = 0.5,
+             alpha = 0.05) +
+  geom_boxplot(width = .25,
+               outlier.shape = NA,
+               alpha = 0.5) +
+  geom_flat_violin(position = position_nudge(x = .2),
+                   alpha = 0.7,
+                   adjust = 1) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler) +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) +
+  scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) #+
+  guides(fill = guide_legend(title = "Type of verification of the applicant's income",
+                             direction = "horizontal",
+                             reverse = T),
+         color = guide_legend(title = "Type of verification of the applicant's income",
+                              direction = "horizontal",
+                              reverse = T)) +
+  labs(x = "",
+       title = "Raincloud Plot of loan amount by 3 different verified income status") +
+  theme_jace +
+  only_x +
+  theme(legend.position = "bottom") -> p
+```
+
+
+### Popularity
+
+
+```{r}
+set.seed(5702)
 imdb %>%
-  arrange(-numVotes)
+  left_join(geners_type_map) -> temp
+  #filter(numVotes > 100000) %>%
+ggplot(temp) +
+  aes(x = numVotes,
+      y = averageRating) +
+  geom_bin2d(bins = 75, color = "black") +
+  geom_smooth(#data = temp %>% 
+                   #sample_frac(0.075) %>% 
+                   #bind_rows(temp %>% filter(numVotes > 500000)) %>% unique,
+              formula = 'y ~ x', 
+              method = "lm",
+              se = T,
+              span = 0.8) +
+  #scale_fill_continuous(low = "grey80", high = "#09005F", breaks = pretty_breaks(8)) 
+  scale_fill_viridis_c(direction = -1, option = 1) +
+  scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler, limits = c(NA, 10)) +
+  scale_x_continuous(breaks = pretty_breaks(8), labels = axis_unit_scaler_1) +
+  theme_jace +
+  get_lightxy(0.75) -> p1
+
+temp %>%
+ggplot() +
+  aes(x = WorldwideGross,
+      y = averageRating) +
+  geom_point(aes(color = Genres_type),
+             position = position_jitter(w = .15),
+             size = 2,
+             alpha = 0.05) +
+  
+  geom_smooth(#data = temp %>% 
+                 #sample_frac(0.075) %>% 
+                 #bind_rows(temp %>% filter(numVotes > 500000)) %>% unique,
+            formula = 'y ~ x', 
+            method = "loess",
+            #se = T,
+            span = 0.8)  -> p2
+  
+  
+p1 | p2 
+  
+
+  geom_boxplot(width = .25,
+               outlier.shape = NA,
+               alpha = 0.5) +
+  geom_flat_violin(position = position_nudge(x = .2),
+                   alpha = 0.7,
+                   adjust = 1) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler) +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) +
+  scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) #+
+  guides(fill = guide_legend(title = "Type of verification of the applicant's income",
+                             direction = "horizontal",
+                             reverse = T),
+         color = guide_legend(title = "Type of verification of the applicant's income",
+                              direction = "horizontal",
+                              reverse = T)) +
+  labs(x = "",
+       title = "Raincloud Plot of loan amount by 3 different verified income status") +
+  theme_jace +
+  only_x +
+  theme(legend.position = "bottom") -> p
+
+```
+
+
+
+## Title Pattern
+```{r}
+library(wordcloud2)
+library(stopwords)
+library(textstem)
+
+
+imdb %>%
+  select(primaryTitle) %>%
+  transmute(word = gsub("[[:punct:]]+", "", primaryTitle)) %>%
+  separate_rows(word, sep = "[[:space:]]") %>%
+  mutate(word = lemmatize_words(tolower(word))) %>%
+  group_by(word) %>%
+  summarise(freq = n()) -> imdb_wordcount
+  
+imdb_wordcount %>%
+  anti_join(tibble(word = c(stopwords::stopwords("en"), # English
+                            stopwords::stopwords("fr"), # French
+                            stopwords::stopwords("de"), # German
+                            stopwords::stopwords("it"), # Italian
+                            1:9, "na", "can"
+                            ))) %>% 
+  filter(nchar(word)>1) %>%
+  arrange(-freq) %>%
+  ungroup() %>%
+  slice(1:200) %>%
+  as.data.frame() -> df_word
+
+rownames(df_word) <- df_word$word
+wordcloud2(df_word, size = 1, shape = 'movie')
 ```
 
 
 - Also, there might be some relationship between the rating volume and rating in IMDB’s scoring system.
+
 
 ## Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?
 
 - A scatter plot with lm lines of box office versus ratings, for example, can reveal their relationship.
 
 - A matrix can also be drawn to filter those outliers in the first and fourth quadrant (high box office but low score, or high score but low box office). We can extract keywords from their review, generate word cloud plots to analyze their characteristics.
+
+```{r}
+imdb %>%
+  arrange(-WorldwideGross) %>%
+  slice(1:30) -> temp
+
+temp %>%
+ggplot() +
+  aes(x = ROI,
+      y = averageRating,
+      size = WorldwideGross) +
+  geom_point(aes(color = mainGenres),
+             position = position_jitter(w = .15),
+             #size = 4,
+             alpha = 0.5) +
+  geom_vline(xintercept = mean(temp$ROI),
+           color = "black",
+           linetype = "dashed") +
+  geom_hline(yintercept = mean(temp$averageRating),
+           color = "black",
+           linetype = "dashed") +
+  
+  # geom_smooth(#data = temp %>%
+  #                #sample_frac(0.075) %>%
+  #                #bind_rows(temp %>% filter(numVotes > 500000)) %>% unique,
+  #           formula = 'y ~ x',
+  #           method = "loess",
+  #           se = F,
+  #           show.legend = F,
+  #           span = 0.8)  +
+  
+  geom_text_repel(aes(label = originalTitle),
+                  color = "gray35",
+                  show.legend=F) +
+  theme_classic() +
+  scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(4)) +
+  theme(axis.line = element_blank()) +
+  get_lightxy(0.75)
+
+
+  #scale_fill_continuous(low = "grey80", high = "#09005F", breaks = pretty_breaks(8)) 
+  scale_fill_viridis_c(direction = -1, option = 1) +
+  scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler, limits = c(NA, 10)) +
+  scale_x_continuous(breaks = pretty_breaks(8), labels = axis_unit_scaler_1) +
+  theme_jace +
+  get_lightxy(0.75) 
+
+
+
+  geom_boxplot(width = .25,
+               outlier.shape = NA,
+               alpha = 0.5) +
+  geom_flat_violin(position = position_nudge(x = .2),
+                   alpha = 0.7,
+                   adjust = 1) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler) +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) +
+  scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(Genres_type) %>% nrow)) #+
+  guides(fill = guide_legend(title = "Type of verification of the applicant's income",
+                             direction = "horizontal",
+                             reverse = T),
+         color = guide_legend(title = "Type of verification of the applicant's income",
+                              direction = "horizontal",
+                              reverse = T)) +
+  labs(x = "",
+       title = "Raincloud Plot of loan amount by 3 different verified income status") +
+  theme_jace +
+  only_x +
+  theme(legend.position = "bottom") -> p
+```

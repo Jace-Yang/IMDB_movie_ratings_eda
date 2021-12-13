@@ -7,3 +7,14 @@ site: bookdown::bookdown_site
 
 # Introduction
 
+While liking a film or not seems to be a very subjective matter, the commercial process of the film appears to generate a plethora of objective statistics, like box office, rating. Are these numbers behind the scenes link to the various factors that make a movie more successful than others?
+
+This question piqued our interest. Meggie and I, 2 big fans about movies, will discuss these topics in this project!
+
+- What specific features do movies with higher profitability have?
+
+- What contributes to higher-rating films?
+
+- Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?
+
+Hope you enjoy! 😄

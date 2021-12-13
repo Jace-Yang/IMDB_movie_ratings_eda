@@ -34,3 +34,9 @@ DT
 htmlwidgets
 Matrix
 mi
+wordcloud2
+stopwords
+sylly
+koRpus
+koRpus.lang.en
+textstem

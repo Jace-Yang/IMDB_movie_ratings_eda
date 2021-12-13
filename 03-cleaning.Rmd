@@ -7,8 +7,8 @@ source("srcs/helpers.R")
 ## Data file
 
 ```{r}
-#name.basics = fread(file = 'data/input/name.basics.tsv')
-#principals = fread(file = 'data/input/title.principals.tsv')
+name.basics = fread(file = 'data/input/name.basics.tsv')
+principals = fread(file = 'data/input/title.principals.tsv')
 #episode = fread(file = 'data/input/title.episode.tsv')
 #crew = fread(file = 'data/input/title.crew.tsv') # director and writer!
 ratings = fread('data/input/title.ratings.tsv')
@@ -19,7 +19,7 @@ basics <- fread('data/input/title.basics.tsv')
 
 ```{r}
 basics %>%
-  head(1000) %>%
+  head(100) %>%
   get_DT(default_show = 5)
 ```
 
@@ -27,17 +27,26 @@ basics %>%
 
 ```{r}
 ratings %>%
-  head(1000) %>%
+  head(100) %>%
   get_DT(default_show = 5)
 ```
 
 ### Budget data
 
 ```{r}
+budget <- readxl::read_xlsx( 'data/input/budget.xlsx') 
 budget %>%
-  head(1000) %>%
+  head(100) %>%
   get_DT(default_show = 5)
 ```
+
+### Crew data
+```{r}
+crew %>%
+  head(100) %>%
+  get_DT(default_show = 5)
+```
+
 
 
 ## Merge Data
@@ -46,15 +55,16 @@ budget %>%
 
 At this report, we dive in the "movies", and especially those with box office (go the thereter). But the original dataset contains all these 10 types:
 
-```{r}
+```{r,eval=FALSE}
 ratings %>% 
   inner_join(basics) %>%
   as_tibble() -> imdb
-
-
-  
-  
 save(imdb, file = "data/processing/imdb.RData")
+```
+
+
+```{r}
+load(file = "data/processing/imdb.RData")
 imdb %>%
   #filter(titleType=="tvMovie") %>% 
   group_by(titleType) %>%
@@ -170,11 +180,12 @@ stringdist_join <- function(word){
     return(result %>% slice(1) %>% pull(tconst))
   }
 }
-
+library(stringdist)
 budget %>%
   anti_join(bind_rows(budget_matched)) %>% # takes about 5mins to run!
   rowwise() %>%
   mutate(fuzzy_join_id = stringdist_join(Movie)) -> budget_5
+
 
 budget_5 %>%
   rename(tconst = fuzzy_join_id) -> budget_matched[[5]]
@@ -193,6 +204,7 @@ save(budget_tconst_mapper, file="data/processing/budget_tconst_mapper.RData")
 After a tedious clean, we get this data to map them to imdb database:
 
 ```{r}
+list(load(file="data/processing/budget_tconst_mapper.RData"))
 budget_tconst_mapper %>% 
   get_DT()
 ```
@@ -201,35 +213,45 @@ budget_tconst_mapper %>%
 imdb_mv %>%
   left_join(budget_tconst_mapper %>%
               select(-c(Movie, ReleaseDate)) %>%
-              mutate_at(c("ProductionBudget", "DomesticGross", "WorldwideGross"), ~ str_remove_all(., "\\$|,") %>% as.numeric()) %>%
+              mutate_at(c("ProductionBudget", "DomesticGross", "WorldwideGross"), 
+                        ~ str_remove_all(., "\\$|,") %>% as.numeric()) %>%
               mutate(Profit = WorldwideGross - ProductionBudget,
-                     ROI = Profit / WorldwideGross) ) %>% as.data.frame() %>% arrange(-numVotes) -> imdb_mv_cleaned
+                     ROI = WorldwideGross / ProductionBudget) ) %>% as.data.frame() %>% arrange(-numVotes) -> imdb_mv_cleaned
 ```
+
+Add crew and priciples
+
+```{r}
+library(magick)
+library(cowplot)
+
+principals %>% 
+  right_join(imdb_mv_cleaned) %>%
+  left_join(name.basics) %>%
+  group_by(nconst, primaryName, category) %>%
+  summarise(movies_in = n() ,
+            total_voted = sum(numVotes, na.rm=T),
+            weighted_avg_rating = sum(averageRating * numVotes, na.rm = T) / total_voted) %>%
+  ungroup -> imdb_person
+
+imdb_person %>%
+  filter(movies_in >= 3,
+         category %in% c("director", "actor", "actress")) %>%
+  mutate(category = ifelse(category == "director", category, "actor & actress")) %>%
+  arrange(-total_voted) %>%
+  group_by(category) %>%
+  slice(1:30) %>% ungroup %>%
+  split(~category) -> imdb_people
+
+save(imdb_people, file="data/processing/imdb_people")
+
+
+```
+
+
 
 
 ## Data Preprocess
-
-Noted that the `genres` column is not cleaned data type. Therefore, we
-
-- create a `mainGenres` column to represent the main genres of the movie.
-
-- create a one-to-many mapping table for each movie in order to analysis, e.g, aveage votes for each genres.
-
-
-```{r,eval=FALSE}
-imdb_mv_cleaned %>% 
-  select(tconst, genres) %>%
-  separate_rows(genres) -> movie_genre_map
-save(movie_genre_map, file = "data/processing/movie_genre_map.RData" )
-rm(movie_genre_map)
-```
-
-```{r}
-imdb_mv_cleaned %<>%
-  separate(genres, 
-           into = c("mainGenres", "secondGneres", "thirdGenres"),
-           sep = ",")
-```
 
 - Missing value recognition
 
@@ -262,8 +284,34 @@ imdb_mv_cleaned %>%
   mutate(isAdult = ifelse(isAdult %in% c('0', '1'), isAdult, NA),
          startYear = as.numeric(startYear)) %>%
   filter(startYear <= 2021) %>%
-  select(-RealeaseYear) -> imdb
-save(imdb, file = "data/processing/imdb(cleaned).RData")
+  select(-RealeaseYear) -> imdb_mv_cleaned_2
+
 ```
 
+
+
+
+- Noted that the `genres` column is not cleaned data type. Therefore, we
+
+  - create a `mainGenres` column to represent the main genres of the movie.
+  
+  - create a one-to-many mapping table for each movie in order to analysis, e.g, aveage votes for each genres.
+
+
+```{r,eval=FALSE}
+imdb_mv_cleaned_2 %>% 
+  select(tconst, genres, numVotes) %>%
+  separate_rows(genres, sep = ",") -> movie_genre_map
+save(movie_genre_map, file = "data/processing/movie_genre_map.RData" )
+rm(movie_genre_map)
+```
+
+```{r}
+imdb_mv_cleaned_2 %>%
+  separate(genres, 
+           into = c("mainGenres", "secondGneres", "thirdGenres"),
+           sep = ",") -> imdb_pure
+
+save(imdb_pure, file = "data/processing/imdb(cleaned).RData")
+```
 

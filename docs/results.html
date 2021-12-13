@@ -24,7 +24,7 @@
 <meta name="author" content="Jace Yang, Meggie Wen" />
 
 
-<meta name="date" content="2021-12-11" />
+<meta name="date" content="2021-12-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -61,6 +61,10 @@
 <script src="libs/dt-core-1.11.3/js/jquery.dataTables.min.js"></script>
 <link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="libs/wordcloud2-0.0.1/wordcloud.css" rel="stylesheet" />
+<script src="libs/wordcloud2-0.0.1/wordcloud2-all.js"></script>
+<script src="libs/wordcloud2-0.0.1/hover.js"></script>
+<script src="libs/wordcloud2-binding-0.2.2/wordcloud2.js"></script>
 
 
 
@@ -89,32 +93,35 @@
 <ul>
 <li class="chapter" data-level="3.1.1" data-path="data-transformation.html"><a href="data-transformation.html#basic-data"><i class="fa fa-check"></i><b>3.1.1</b> basic data</a></li>
 <li class="chapter" data-level="3.1.2" data-path="data-transformation.html"><a href="data-transformation.html#rating-data"><i class="fa fa-check"></i><b>3.1.2</b> Rating data</a></li>
+<li class="chapter" data-level="3.1.3" data-path="data-transformation.html"><a href="data-transformation.html#budget-data"><i class="fa fa-check"></i><b>3.1.3</b> Budget data</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="data-transformation.html"><a href="data-transformation.html#merge-data"><i class="fa fa-check"></i><b>3.2</b> Merge Data</a></li>
+<li class="chapter" data-level="3.2" data-path="data-transformation.html"><a href="data-transformation.html#merge-data"><i class="fa fa-check"></i><b>3.2</b> Merge Data</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="data-transformation.html"><a href="data-transformation.html#limit-the-scope"><i class="fa fa-check"></i><b>3.2.1</b> Limit the scope</a></li>
+<li class="chapter" data-level="3.2.2" data-path="data-transformation.html"><a href="data-transformation.html#join-all-table"><i class="fa fa-check"></i><b>3.2.2</b> Join all table</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="data-transformation.html"><a href="data-transformation.html#data-preprocess"><i class="fa fa-check"></i><b>3.3</b> Data Preprocess</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#missing-value-recognition"><i class="fa fa-check"></i><b>4.1</b> Missing value recognition</a></li>
-<li class="chapter" data-level="4.2" data-path="missing-values.html"><a href="missing-values.html#missing-glance"><i class="fa fa-check"></i><b>4.2</b> Missing glance</a></li>
-<li class="chapter" data-level="4.3" data-path="missing-values.html"><a href="missing-values.html#missing-plot"><i class="fa fa-check"></i><b>4.3</b> Missing plot</a>
+<li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#missing-glance"><i class="fa fa-check"></i><b>4.1</b> Missing glance</a></li>
+<li class="chapter" data-level="4.2" data-path="missing-values.html"><a href="missing-values.html#missing-plot"><i class="fa fa-check"></i><b>4.2</b> Missing plot</a>
 <ul>
-<li class="chapter" data-level="4.3.1" data-path="missing-values.html"><a href="missing-values.html#missing-pattern-summary"><i class="fa fa-check"></i><b>4.3.1</b> Missing pattern summary</a></li>
-<li class="chapter" data-level="4.3.2" data-path="missing-values.html"><a href="missing-values.html#heatmap"><i class="fa fa-check"></i><b>4.3.2</b> Heatmap</a></li>
+<li class="chapter" data-level="4.2.1" data-path="missing-values.html"><a href="missing-values.html#missing-pattern-summary"><i class="fa fa-check"></i><b>4.2.1</b> Missing pattern summary</a></li>
+<li class="chapter" data-level="4.2.2" data-path="missing-values.html"><a href="missing-values.html#heatmap"><i class="fa fa-check"></i><b>4.2.2</b> Heatmap</a></li>
 </ul></li>
-<li class="chapter" data-level="4.4" data-path="missing-values.html"><a href="missing-values.html#insight-about-why-na-happens"><i class="fa fa-check"></i><b>4.4</b> Insight about why NA happens</a>
+<li class="chapter" data-level="4.3" data-path="missing-values.html"><a href="missing-values.html#insight-about-why-na-happens"><i class="fa fa-check"></i><b>4.3</b> Insight about why NA happens</a>
 <ul>
-<li class="chapter" data-level="4.4.1" data-path="missing-values.html"><a href="missing-values.html#missing-by-years"><i class="fa fa-check"></i><b>4.4.1</b> Missing by Years</a></li>
-<li class="chapter" data-level="4.4.2" data-path="missing-values.html"><a href="missing-values.html#missing-by-genres"><i class="fa fa-check"></i><b>4.4.2</b> Missing by Genres</a></li>
+<li class="chapter" data-level="4.3.1" data-path="missing-values.html"><a href="missing-values.html#missing-by-years"><i class="fa fa-check"></i><b>4.3.1</b> Missing by Years</a></li>
+<li class="chapter" data-level="4.3.2" data-path="missing-values.html"><a href="missing-values.html#missing-by-genres"><i class="fa fa-check"></i><b>4.3.2</b> Missing by Genres</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#what-specific-features-do-movies-with-higher-profitability-have"><i class="fa fa-check"></i><b>5.1</b> What specific features do movies with higher profitability have?</a></li>
-<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#what-contributes-to-higher-rating-films"><i class="fa fa-check"></i><b>5.2</b> What contributes to higher-rating films?</a>
-<ul>
-<li class="chapter" data-level="5.2.1" data-path="results.html"><a href="results.html#shit-bro"><i class="fa fa-check"></i><b>5.2.1</b> shit bro</a></li>
-</ul></li>
-<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off"><i class="fa fa-check"></i><b>5.3</b> Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</a></li>
+<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#long-tail-effect-minority-make-up-majority"><i class="fa fa-check"></i><b>5.1</b> Long tail effect: minority make up majority</a></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#what-specific-features-do-movies-with-higher-profitability-have"><i class="fa fa-check"></i><b>5.2</b> What specific features do movies with higher profitability have?</a></li>
+<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#what-contributes-to-higher-rating-films"><i class="fa fa-check"></i><b>5.3</b> What contributes to higher-rating films?</a></li>
+<li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off"><i class="fa fa-check"></i><b>5.4</b> Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
@@ -145,86 +152,39 @@
 <li><p>What contributes to higher-rating films?</p></li>
 <li><p>Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</p></li>
 </ul>
-<div id="what-specific-features-do-movies-with-higher-profitability-have" class="section level2" number="5.1">
-<h2><span class="header-section-number">5.1</span> What specific features do movies with higher profitability have?</h2>
+<div id="long-tail-effect-minority-make-up-majority" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Long tail effect: minority make up majority</h2>
+<p>First, lets talk about the votes contributed by.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-5-1.png" width="864" style="display: block; margin: auto;" /></p>
+<div id="htmlwidget-54273feed50076cd1ff2" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-54273feed50076cd1ff2">{"x":{"filter":"none","vertical":false,"editable":{"target":"cell","disable":{"columns":null},"numeric":[1,2],"area":[]},"data":[["0.00%","25.00%","50.00%","75.00%","80.00%","85.00%","90.00%","95.00%","97.00%","99.00%","99.50%","99.90%","99.99%"],[5,16,50,251,389,666,1370,4341,10155,58747,129302,434385,1122370],[318482,243554,160107,79626,63776,47814,31852,15925,9555,3186,1593,319,33],["El rey de las finanzas<br/>Alas de juventud<br/>The Storm Riders","The Prodigal Son<br/>Faldgruben<br/>Salome Mad","Brewster's Millions<br/>David Harum<br/>Hoffmanns Erzählungen","Hands Up!<br/>The Big Timer<br/>The Woman Accused","Broadway<br/>Born Reckless<br/>I've Got Your Number","The Saint Takes Over<br/><span style=\"background-color: #277cee44\">Vice Squad<\/span><br/>Highway Dragnet","Thirst<br/>The Wife of an Important Man<br/>Disco Dancer","Drive Thru<br/>Gardens of the Night<br/>1 Buck","Angst<br/>The Nun's Story<br/>The Valet","4 Months, 3 Weeks and 2 Days<br/>Ghajini<br/>1922","8MM<br/>John Q<br/>Hail, Caesar!","Horrible Bosses<br/>Tenet<br/>Lost in Translation","Back to the Future<br/>Avatar<br/>Memento"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>%<\/th>\n      <th>Quantiles of # of Votes<\/th>\n      <th>Number of movies >= Quantiles<\/th>\n      <th>Examples<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"autoWidth":true,"dom":"t","pageLength":20,"columnDefs":[{"className":"dt-right","targets":[1,2]}],"order":[],"orderClasses":false,"lengthMenu":[10,20,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li><p>It’s not surprising to find out that over 90% of the movies do not have votes over 500. We consider 1000 as a threshold to determine the movie is at least not unknown to the general public.</p>
+<ul>
+<li>For example, I asked several friends and none of them ever heard of <a href="https://www.imdb.com/title/tt0084861/">The Golden Chance</a>, which receives 666 votes and this number is higher than 85% of the movies in the entire imdb database.</li>
+</ul></li>
+</ul>
+</div>
+<div id="what-specific-features-do-movies-with-higher-profitability-have" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> What specific features do movies with higher profitability have?</h2>
 <ul>
 <li><p>First, we can use the budget data provided by the-numbers to estimate the cost, and then combine it with box offices to calculate the revenue of each movie.</p></li>
 <li><p>Through IMDB’s main data, we can analyze the genres of movies, popularity of the star/director/screenwriter, or the runtime of movies that can bring high profits.</p></li>
 </ul>
 </div>
-<div id="what-contributes-to-higher-rating-films" class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> What contributes to higher-rating films?</h2>
-<div id="shit-bro" class="section level3" number="5.2.1">
-<h3><span class="header-section-number">5.2.1</span> shit bro</h3>
+<div id="what-contributes-to-higher-rating-films" class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> What contributes to higher-rating films?</h2>
 <ul>
 <li>In addition to using the same data as the first question, we can also use review data provided by Stanford to discover how people think when lots of people give high scores to a movie.</li>
 </ul>
-<div id="htmlwidget-83b74bd4708f25b168dd" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-83b74bd4708f25b168dd">{"x":{"filter":"none","vertical":false,"editable":{"target":"cell","disable":{"columns":null},"numeric":[1,2],"area":[]},"data":[["0.00%","25.00%","50.00%","75.00%","80.00%","85.00%","90.00%","95.00%","97.00%","99.00%","99.50%","99.90%","99.99%"],[5,11,24,92,137,227,431,1234,2407,10181,28880,182623,723585],[1195712,903082,602174,300550,239743,179472,119719,59809,35873,11959,5980,1197,121],["El rey de las finanzas<br/>Alas de juventud<br/>Fresh Painter","The Deserter<br/>Eine moderne Jungfrau von Orleans<br/>Hiawatha","Barnet Horse Fair<br/>Dessinateur express<br/>The Beach at Villiers in a Gale","Entente cordiale<br/>From the Submerged<br/>Double Crossed","The Violin Maker of Cremona<br/>On the Fire<br/>The Soul of Youth","The Golden Chance<br/>Ring Up the Curtain<br/>Alice's Spooky Adventure","Mystery Liner<br/>Frontier<br/>They Shall Have Music","Tango Tangle<br/>The Little Match Girl<br/>Till the End of Time","Till Human Voices Wake Us<br/>The Screwfly Solution<br/>Steak","Le Mans<br/>Law of the Lawless<br/>Beyond the Reach","Clouds of Sils Maria<br/>The Professor<br/>Universal Soldier: The Return","Rocky III<br/>Jarhead<br/>Eagle Eye","The Imitation Game<br/>City of God<br/>Blade Runner"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>%<\/th>\n      <th>Quantiles of # of Votes<\/th>\n      <th>Number of rows >= Quantiles<\/th>\n      <th>Examples<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"autoWidth":true,"dom":"t","pageLength":20,"columnDefs":[{"className":"dt-right","targets":[1,2]}],"order":[],"orderClasses":false,"lengthMenu":[10,20,25,50,100]}},"evals":[],"jsHooks":[]}</script>
-<pre><code>## [1] &quot;A Lawless Street&quot;</code></pre>
-<ul>
-<li><p>It’s not supprising to find out that over 90% of the movies do not have votes over 500. We consider 1000 as a threshold to determine the movie is at least not unknown to the general public.</p>
-<ul>
-<li>For example, I asked several friends and none of them ever heard of <a href="https://www.imdb.com/title/tt0005402/">The Golden Chance</a>, which receives 227 votes and this number is higher than 85% of the movies in the entire imdb database.</li>
-</ul></li>
-</ul>
-<!-- ```{r} -->
-<!-- imdb %>% -->
-<!--   filter(numVotes > 100000) %>% -->
-<!--   ggplot() + -->
-<!--   aes(x = "", -->
-<!--       y = numVotes, -->
-<!--       fill = "") + -->
-<!--   geom_point(aes(color = ""), -->
-<!--              position = position_jitter(w = .15), -->
-<!--              size = 0.5, -->
-<!--              alpha = 0.05) + -->
-<!--   geom_boxplot(width = .25, -->
-<!--                outlier.shape = NA, -->
-<!--                alpha = 0.5) + -->
-<!--   geom_flat_violin(position = position_nudge(x = .2), -->
-<!--                    alpha = 0.7, -->
-<!--                    adjust = 0.5)  + -->
-<!--   coord_flip() + -->
-<!--   scale_x_discrete(expand = c(0,0)) + -->
-<!--   scale_y_continuous(breaks = breaks_width(5000), trans='log10')# + -->
-<!--   scale_fill_manual(values = JACE_COLOR) + -->
-<!--   scale_color_manual(values = JACE_COLOR) + -->
-<!--   guides(fill = guide_legend(title = "Type of verification of the applicant's income", -->
-<!--                              direction = "horizontal", -->
-<!--                              reverse = T), -->
-<!--          color = guide_legend(title = "Type of verification of the applicant's income", -->
-<!--                               direction = "horizontal", -->
-<!--                               reverse = T)) + -->
-<!--   labs(x = "", -->
-<!--        title = "Raincloud Plot of loan amount by 3 different verified income status") + -->
-<!--   theme_jace + -->
-<!--   only_x + -->
-<!--   theme(legend.position = "bottom") -> p -->
-<!-- p -->
-<!-- ``` -->
-<pre><code>## # A tibble: 1,195,712 × 11
-##    tconst    averageRating numVotes titleType primaryTitle originalTitle isAdult
-##    &lt;chr&gt;             &lt;dbl&gt;    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;           &lt;int&gt;
-##  1 tt0111161           9.3  2488195 movie     The Shawsha… The Shawshan…       0
-##  2 tt0468569           9    2441388 movie     The Dark Kn… The Dark Kni…       0
-##  3 tt1375666           8.8  2190799 movie     Inception    Inception           0
-##  4 tt0137523           8.8  1959929 movie     Fight Club   Fight Club          0
-##  5 tt0110912           8.9  1924045 movie     Pulp Fiction Pulp Fiction        0
-##  6 tt0109830           8.8  1922897 movie     Forrest Gump Forrest Gump        0
-##  7 tt0944947           9.2  1899202 tvSeries  Game of Thr… Game of Thro…       0
-##  8 tt0133093           8.7  1776732 movie     The Matrix   The Matrix          0
-##  9 tt0120737           8.8  1743718 movie     The Lord of… The Lord of …       0
-## 10 tt0167260           8.9  1722424 movie     The Lord of… The Lord of …       0
-## # … with 1,195,702 more rows, and 4 more variables: startYear &lt;chr&gt;,
-## #   endYear &lt;chr&gt;, runtimeMinutes &lt;chr&gt;, genres &lt;chr&gt;</code></pre>
+<div id="htmlwidget-d73f4b25d416856f5a7d" style="width:912px;height:624px;" class="wordcloud2 html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d73f4b25d416856f5a7d">{"x":{"word":["","love","story","life","el","girl","night","day","last","world","one","woman","movie","time","black","secret","good","death","christmas","go","live","boy","dream","dead","house","little","lose","make","king","blue","heart","great","big","city","new","year","kill","blood","american","dark","red","home","los","child","white","two","murder","star","road","film","lady","na","angel","ii","killer","game","devil","god","rise","sex","family","three","tale","adventure","fall","wild","street","mr","ghost","eye","bad","journey","way","return","kid","summer","island","end","back","dog","get","hell","first","much","sea","call","young","legend","hero","fire","shadow","break","run","high","long","friend","song","brother","land","mother","like","people","light","moon","dance","vs","miss","beyond","part","inside","rock","v","las","america","strange","baby","sky","queen","father","hollywood","us","take","river","behind","bear","face","mystery","paradise","wife","heaven","never","meet","sun","water","special","earth","fight","old","happy","thing","dragon","school","without","soul","kiss","gun","lie","perfect","evil","monster","west","final","magic","daughter","name","sister","town","hour","battle","show","mountain","music","art","wed","sweet","crime","truth","let","see","fly","terror","sin","want","lover","party","space","play","side","seven","golden","real","fear","warrior","place","deadly","paris","wolf","ride","look","diary","gold","four","liebe","can","true","search","hot","walk","cat","revenge"],"freq":[6894,5152,3124,2800,2758,2464,2301,2168,1891,1800,1796,1695,1600,1591,1414,1414,1399,1351,1335,1316,1315,1277,1248,1247,1205,1190,1124,1088,1083,1078,1066,1056,1047,1039,1037,1031,1024,1014,993,988,942,920,895,885,882,878,876,856,851,816,807,802,799,793,792,790,783,783,782,780,768,763,759,754,754,750,749,723,718,715,712,712,712,705,687,687,671,668,656,656,655,654,650,650,646,636,633,632,628,626,623,620,617,612,608,605,599,598,592,588,587,587,586,585,583,582,575,573,569,560,558,534,530,526,526,524,521,517,513,512,508,506,503,496,489,479,479,476,474,473,473,470,467,466,459,457,455,455,452,451,450,450,448,446,443,442,442,442,440,437,435,434,434,429,429,429,428,426,423,420,419,419,418,416,414,407,406,404,403,399,399,398,398,396,394,394,393,390,389,388,388,386,386,385,384,384,383,381,380,376,376,375,373,368,368,364,363,363,362,362],"fontFamily":"Segoe UI","fontWeight":"bold","color":"random-dark","minSize":0,"weightFactor":0.0261096605744125,"backgroundColor":"white","gridSize":0,"minRotation":-0.785398163397448,"maxRotation":0.785398163397448,"shuffle":true,"rotateRatio":0.4,"shape":"movie","ellipticity":0.65,"figBase64":null,"hover":null},"evals":[],"jsHooks":[]}</script>
 <ul>
 <li>Also, there might be some relationship between the rating volume and rating in IMDB’s scoring system.</li>
 </ul>
 </div>
-</div>
-<div id="is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off" class="section level2" number="5.3">
-<h2><span class="header-section-number">5.3</span> Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</h2>
+<div id="is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off" class="section level2" number="5.4">
+<h2><span class="header-section-number">5.4</span> Is commercial success (high profit and high box offices) positively correlated with high rating or a trade-off?</h2>
 <ul>
 <li><p>A scatter plot with lm lines of box office versus ratings, for example, can reveal their relationship.</p></li>
 <li><p>A matrix can also be drawn to filter those outliers in the first and fourth quadrant (high box office but low score, or high score but low box office). We can extract keywords from their review, generate word cloud plots to analyze their characteristics.</p></li>
