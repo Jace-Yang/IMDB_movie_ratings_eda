@@ -335,20 +335,39 @@ bind_rows(imdb_people) %>%
 
 ### Merge `Movie/genres`-wised data
 
+Noted that the `genres` column is not a cleaned column. To preserve this 1-movie-to-multi-genres relation, we 
 
-Noted that the `genres` column is not cleaned data type. Therefore, we
 
- 
  
 ```{r,eval=FALSE}
 imdb_mv_cleaned_2 %>% 
   select(tconst, genres, numVotes) %>%
   separate_rows(genres, sep = ",") -> movie_genre_map
 
+movie_genre_map %>%
+  left_join(movie_genre_map %>%
+              group_by(genres) %>%
+              filter(!is.na(genres)) %>%
+              summarise(votes = sum(numVotes, na.rm=T))) %>%
+  arrange(votes) %>%
+  group_by(tconst) %>%
+  mutate(genres_num = 1:n()) %>%
+  
+  ungroup %>%
+  mutate(genres_type = case_when(
+    genres_num==1 ~ "mainGenres",
+    genres_num==2 ~ "secondGenres",
+    genres_num==3 ~ "thirdGenres",
+    T ~ NA_character_
+  )) -> temp
+
 imdb_mv_cleaned_2 %>%
-  separate(genres, 
-           into = c("mainGenres", "secondGenres", "thirdGenres"),
-           sep = ",") -> imdb_pure
+  left_join(temp %>%
+              pivot_wider(id_cols = tconst,
+                          names_from = genres_type,
+                          values_from = genres)) %>%
+  select(-genres) -> imdb_pure
+
 
 imdb_pure %>%
   group_by(mainGenres) %>%
@@ -370,12 +389,16 @@ save(imdb_pure, file = "data/processing/imdb(cleaned).RData")
 save(geners_type_map, geners_type_map_2, file = "data/processing/genres_mappers.RData")
 ```
  
-- create a `mainGenres` column to represent the main genres of the movie.
- 
+- assign `main genres`, `second genres` and `third genres` based on **reverse order of the popularity of genres** to each movie. For example, if a movie is tagged with Crime, Action, and Adventure. We will label Crime (177m votes) as main genre, Adventure (250m votes) as second, and Action (306m votes) as third.
+
+
 ```{r}
 load(file = "data/processing/imdb(cleaned).RData")
 imdb_pure %>%
-  select(tconst, contains("enre"))
+  arrange(-numVotes) %>%
+  slice(1:100) %>%
+  select(primaryTitle, contains("enre")) %>%
+  get_DT(default_show = 5)
 ```
  
 - create a one-to-many mapping table for each movie in order to analysis, e.g, aveage votes for each genres.
