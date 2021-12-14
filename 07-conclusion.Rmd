@@ -1,2 +1,10 @@
 # Conclusion
 
+1. Producing movie while wishing to earn much can be harder than we typically thought!
+
+     Most of the movies (more than 95%) are not seen by most of people, and most of the movies are not making a lot of money.
+
+2. Producers may need to find the balance between profit and quality of movies.
+
+    Higher profitability is usually negatively correlated with ratings.
+    
