@@ -996,15 +996,12 @@
           }
 
 
-        var margin = {top: 25, right: 0, bottom: 25, left: 25};
 
         function update(data) {
 
           var yScale = d3.scaleLinear()
                           .domain([0, d3.max(data.map(d => d.box_offices))])
                           .range([0, 900])
-
-          var yAxis = d3.axisTop().scale(yScale);
 
 
           var bar = svg.selectAll("rect").data(data);

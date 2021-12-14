@@ -1,3 +1,12 @@
 # Interactive Part
 
 <iframe src="InteractivePart.html" width="1000" height="1000"></iframe>
+
+We can see a clear trend of `genre` that received the highest box offices from 1930 to present (2021), from Drama to Adventure.
+
+Possible reasons can be:
+
+1. Technology has improved the sense of immersion when watching movie, making the `genre` of Adventure more popular;
+2. Technology has made adventure and action movies more feasible;
+3. People now are looking for excitement more often than in the past;
+etc.
