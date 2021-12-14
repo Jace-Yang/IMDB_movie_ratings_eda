@@ -5,25 +5,41 @@
 		<meta charset="utf-8">
 		<title>D3</title>
 		<script src="https://d3js.org/d3.v7.js"></script>
+
+
 	</head>
 
 	<body>
+
     <h1>Worldwide Box Office Ranking by Decades: 1900-2000</h1>
 
-    <!-- <svg width="1000" height="40">
-      <rect x="60" y="10" width="30" height="30" fill="#005F73"></rect>
-      <rect x="120" y="10" width="30" height="30" fill="#E9D8A6"></rect>
-      <rect x="180" y="10" width="30" height="30" fill="#EE9B00"></rect>
-      <rect x="240" y="10" width="30" height="30" fill="#BB3E03"></rect>
-      <rect x="300" y="10" width="30" height="30" fill="#CA6702"></rect>
-      <rect x="360" y="10" width="30" height="30" fill="#9B2226"></rect>
-      <rect x="420" y="10" width="30" height="30" fill="#0A9396"></rect>
+    <div>
+      <svg id="leg" height=30 width=800></svg>
+    </div>
+    <script>
+      var svg = d3.select("#leg");
 
-    </svg>
-    <svg width="1000" height="30">
-      <text x="50" y="70" fill="black" font-weight="bold" font-size="10px">
-     	Web scrapping is fun.</text>
-    </svg> -->
+      // Handmade legend
+      svg.append("circle").attr("cx",10).attr("cy",10).attr("r", 6).style("fill", "#005F73");
+      svg.append("circle").attr("cx",100).attr("cy",10).attr("r", 6).style("fill", "#E9D8A6");
+      svg.append("circle").attr("cx",190).attr("cy",10).attr("r", 6).style("fill", "#EE9B00");
+      svg.append("circle").attr("cx",280).attr("cy",10).attr("r", 6).style("fill", "#BB3E03");
+      svg.append("circle").attr("cx",370).attr("cy",10).attr("r", 6).style("fill", "#CA6702");
+      svg.append("circle").attr("cx",460).attr("cy",10).attr("r", 6).style("fill", "#9B2226");
+      svg.append("circle").attr("cx",550).attr("cy",10).attr("r", 6).style("fill", "#0A9396");
+
+      svg.append("text").attr("x", 20).attr("y", 10).text("Drama").style("font-size", "15px").attr("alignment-baseline","middle");
+      svg.append("text").attr("x", 110).attr("y", 10).text("Adventure").style("font-size", "15px").attr("alignment-baseline","middle");
+      svg.append("text").attr("x", 200).attr("y", 10).text("Action").style("font-size", "15px").attr("alignment-baseline","middle");
+      svg.append("text").attr("x", 290).attr("y", 10).text("Crime").style("font-size", "15px").attr("alignment-baseline","middle");
+      svg.append("text").attr("x", 380).attr("y", 10).text("Comedy").style("font-size", "15px").attr("alignment-baseline","middle");
+      svg.append("text").attr("x", 470).attr("y", 10).text("Others").style("font-size", "15px").attr("alignment-baseline","middle");
+      svg.append("text").attr("x", 560).attr("y", 10).text("Horror").style("font-size", "15px").attr("alignment-baseline","middle");
+
+
+    </script>
+
+
 
     <button type="1930-1940">1930-1940</button>
     <button type="1940-1950">1940-1950</button>
@@ -35,6 +51,7 @@
     <button type="2000-2010">2000-2010</button>
     <button type="2010-2020">2010-2020</button>
     <!-- <button type="cum">All Years</button> -->
+
 
 
 
@@ -947,6 +964,7 @@
           .append("svg")
           .attr("width", svg_width)
           .attr("height", "1000");
+
 
         var n = 10; // number of movies to display
 
