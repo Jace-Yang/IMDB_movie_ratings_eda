@@ -1,5 +1,7 @@
 # Conclusion
 
+## Results
+
 1. Producing movie while wishing to earn much can be harder than we typically thought!
 
      Most of the movies (more than 95%) are not seen by most of people, and most of the movies are not making a lot of money.
@@ -8,3 +10,9 @@
 
     Higher profitability is usually negatively correlated with ratings.
     
+    
+## Limitations
+
+- Limitation of D3 part: we cannot see a very comprehensive analysis of movies by our animation but only comparison of box office between individual movies.
+
+- Limitation of other parts: Also, we didn't find out clear indication of the box office of certain movie throughout all the years.

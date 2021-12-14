@@ -202,6 +202,24 @@ axis_unit_scaler_1 <- function(n, digits = 1){
   return(labels)
 }
 
+axis_unit_scaler_2 <- function(n, digits = 2){
+  addUnits_leq_0 <- function(n){
+    labels <- ifelse(n < 1000, n,  # less than thousands
+                     ifelse(n < 1e6, paste0(round(n/1e3, digits = digits), 'k'),  # in thousands
+                            ifelse(n < 1e9, paste0(round(n/1e6, digits = digits), 'M'),  # in millions
+                                   ifelse(n < 1e12, paste0(round(n/1e9, digits = digits), 'B'), # in billions
+                                          ifelse(n < 1e15, paste0(round(n/1e12, digits = digits), 'T'), # in trillions
+                                                 'too big!'
+                                          )))))}
+  
+  labels <- ifelse(n < 0, 
+                   paste0("-", addUnits_leq_0(-n)),  # less than thousands
+                   ifelse(n >= 0, addUnits_leq_0(n),  
+                          "NA"))
+  return(labels)
+}
+
+
 plot_missing <- function(df, percent = F, long_axis = F){
   
   n_row = nrow(df)

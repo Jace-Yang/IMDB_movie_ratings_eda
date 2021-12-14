@@ -11,7 +11,7 @@
 
 	<body>
 
-    <h1>Worldwide Box Office Ranking by Decades: 1900-2000</h1>
+    <h1>Worldwide Box Office Ranking by Decades: 1900-2021</h1>
 
     <div>
       <svg id="leg" height=30 width=800></svg>
@@ -50,7 +50,7 @@
     <button type="1990-2000">1990-2000</button>
     <button type="2000-2010">2000-2010</button>
     <button type="2010-2020">2010-2020</button>
-    <!-- <button type="cum">All Years</button> -->
+    <button type="2021">2021</button>
 
 
 
@@ -996,15 +996,12 @@
           }
 
 
-        var margin = {top: 25, right: 0, bottom: 25, left: 25};
 
         function update(data) {
 
           var yScale = d3.scaleLinear()
                           .domain([0, d3.max(data.map(d => d.box_offices))])
                           .range([0, 900])
-
-          var yAxis = d3.axisTop().scale(yScale);
 
 
           var bar = svg.selectAll("rect").data(data);
@@ -1080,9 +1077,9 @@
           } else if (selected_year == "2010-2020") {
             var dat = movie_data.filter(d => d.year <= 2020 && d.year > 2010);
             update(rank(dat.slice(0,10)));
-          // } else if (selected_year == "cum") {
-          //   var dat = movie_data;
-          //   update(rank(dat.slice(0,10)));
+          } else if (selected_year == "2021") {
+            var dat = movie_data.filter(d => d.year == 2021);
+            update(rank(dat.slice(0,10)));
           };
         });
 

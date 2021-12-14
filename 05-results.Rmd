@@ -7,6 +7,8 @@ imdb_pure -> imdb
 load(file="data/processing/imdb_people.RData")
 load(file = "data/processing/movie_genre_map.RData" )
 load(file = "data/processing/genres_mappers.RData")
+load(file="data/processing/imdb_peole_movie.RData")
+
 ```
 
 At this part, we want you to imagine you are a producer of a film company or an investor that are evaluating on a movie construction project.
@@ -177,4 +179,492 @@ ggplot() +
   
   - *Avatar* gets highest box office (2,845,899,541 dollars) in film history. 
   
-## C
+## Choose the Genre
+
+### How genres make a difference?
+
+To begin, we can see that the various statistics of different genres are quite disparate.
+
+```{r}
+movie_genre_map %>%
+  left_join(imdb) %>%
+  left_join(geners_type_map_2) %>%
+  filter(!is.na(ROI)) %>%
+  group_by(genres) %>%
+  summarise(movies = n(),
+            first_movie_at = min(startYear),
+            runtimeMinutes = mean(as.integer(runtimeMinutes), na.rm=T),
+            `Avg. IMDb rating` = mean(averageRating, na.rm=T),
+            ProductionBudget = mean(ProductionBudget, na.rm=T),
+            WorldwideGross = mean(WorldwideGross, na.rm=T),
+            #Profit = mean(Profit, na.rm=T),
+            ROI = sum(WorldwideGross, na.rm=T) / sum(ProductionBudget, na.rm=T)) %>%
+  filter(movies > 100) %>%
+  # mutate(
+         # first_movie_at_by_time = case_when(
+         #   first_movie_at > 1960 ~ "After 1960s",
+         #   first_movie_at > 1930 ~ "1930s ~ 1960s",
+         #   first_movie_at > 1900 ~ "1900s ~ 1930s",
+         #   T ~ "1900s ~ 1960s",
+         #) %>%
+  #relocate(first_movie_at_by_time, .after="ROI") %>%
+  arrange(desc(genres)) %>%
+  mutate(genres = fct_rev(genres)) %>%
+  rename("# of Movies" = movies,
+         "first movies at" = first_movie_at,
+         "Avg. run time" = runtimeMinutes,
+         "Avg. production budge" = ProductionBudget,
+         "Total Box office" = WorldwideGross) %>%
+
+
+ parcoords(
+    rownames = F
+    ,brushMode = "1d-axes"
+    ,reorderable = TRUE
+    ,queue = TRUE
+    ,color= list(
+       colorBy="genres"
+       , colorScale = "scaleOrdinal"
+       , colorScheme = colorRampPalette(brewer.pal(11, "Spectral"))(22)
+    )
+    ,withD3 = TRUE
+  )
+```
+
+- Dramas have the highest amount of films, with almost 3000 films.
+
+- Sport is the most recent genre to emerge, with many genres having new works in the 1920s-1940s 
+
+- History, war, and other subjects have an average duration of more than 2 hours 
+
+- Documentary's average ROI reached a maximum of 4.7, due to the relatively low cost of actors but highest fame, while Box office is higher Adventure and Action ROI in the vicinity of 3. Animation has both a high ROI as well as a high box office.
+
+### Genre affects profitability a lot
+
+```{r fig.width=8.73}
+movie_genre_map %>%
+  left_join(imdb %>% select(tconst, averageRating, numVotes, WorldwideGross)) -> temp
+
+temp %<>% 
+  left_join(
+    temp %>%
+      group_by(genres) %>%
+      summarise(n = sum(numVotes, na.rm=T)) %>%
+      mutate(genres_type = ifelse(min_rank(-n) <=13, 
+                                 genres, 
+                                 "Others") %>%
+                            factor ) %>%
+      select(-n)) %>%
+  mutate(genres = fct_reorder(genres_type, 
+                              WorldwideGross, 
+                              function(x) -median(x,na.rm=T)) %>%
+                  fct_relevel("Others", after=Inf)) %>% 
+  select(-genres_type)
+  
+ggplot(temp) +
+  aes(x = genres,
+      y = WorldwideGross,
+      fill = genres) +
+  geom_boxplot(width = .25,
+               #outlier.shape = NA,
+               outlier.size = 1.1,
+               alpha = 0.5,
+               show.legend = F) +
+  geom_flat_violin(position = position_nudge(x = .2),
+                   alpha = 0.7,
+                   adjust = 1,
+                   show.legend = F) +
+  scale_y_continuous(breaks = pretty_breaks(10), labels = axis_unit_scaler_1) +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(genres) %>% nrow)) +
+  scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(genres) %>% nrow)) +
+  theme_jace +
+  labs(x = "Genres",
+       y = "Total Box office ($)",
+       title = "Raincloud distribution plot of box office by different genres",
+       subtitle = "The plot show TOP 13 popular genres and group the other genres into 1 class") 
+```
+
+- In terms of box office, TOP 3 genres are Animation, Adventure, and Action, while the last 3 are Horror, Romance, and Drama. It consistent with our common sense.
+
+- While all genres show a concentrating around low box office, movies in Actions seem to have a more flat transition into higher box office.
+
+- Those above 2.5B 'outliers' are in Adventure, Action, Fantasy and Drama.
+
+### But not that much difference in rating
+
+```{r fig.width=8.73}
+
+movie_genre_map %>%
+  left_join(imdb %>% select(tconst, averageRating, numVotes, WorldwideGross)) -> temp
+
+temp %<>% 
+  left_join(
+    temp %>%
+      group_by(genres) %>%
+      summarise(n = sum(numVotes, na.rm=T)) %>%
+      mutate(genres_type = ifelse(min_rank(-n) <=13, 
+                                 genres, 
+                                 "Others") %>%
+                            factor ) %>%
+      select(-n)) %>%
+  mutate(genres = fct_reorder(genres_type, 
+                              averageRating, 
+                              function(x) -median(x,na.rm=T)) %>%
+                  fct_relevel("Others", after=Inf)) %>% 
+  select(-genres_type)
+
+ggplot(temp) +
+  aes(x = genres,
+      y = averageRating,
+      fill = genres) +
+  geom_hline(yintercept = mean(temp$averageRating, na.rm=T),
+             color = "gray25",
+             linetype = "dashed") +
+  geom_boxplot(width = .25,
+               #outlier.shape = NA,
+               outlier.size = 1.1,
+               alpha = 0.5,
+               show.legend = F) +
+  geom_flat_violin(position = position_nudge(x = .2),
+                   alpha = 0.7,
+                   adjust = 1,
+                   show.legend = F) +
+  
+  scale_y_continuous(breaks = pretty_breaks(10), labels = axis_unit_scaler) +
+  scale_fill_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(genres) %>% nrow)) +
+  scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(temp %>% distinct(genres) %>% nrow)) +
+  theme_jace +
+  labs(x = "Genres",
+       y = "Avg. IMDb ratings",
+       title = "Raincloud distribution plot of box office by different genres",
+       subtitle = "The plot show TOP 13 popular genres and group the other genres into 1 class") 
+```
+
+
+- As the rating is weighted calculated for the all the votes of 1 movie, it looks kind of normally distributed around the mean. 
+
+- Biography, surprisingly, have a largest average rating. This might due to people like to give higher rating to esoteric movies, especially those they think they understand the hidden meaning.
+
+- The group differences of genres are not less than box office. Biography have about 2 scores higher than the worst of 13 popular genres, the Horror movie.
+
+
+
+## Pick a good title
+
+- Wordcloud for titles of all movies
+
+```{r}
+library(wordcloud2)
+library(stopwords)
+library(textstem)
+imdb %>%
+  select(primaryTitle) %>%
+  transmute(word = gsub("[[:punct:]]+", "", primaryTitle)) %>%
+  separate_rows(word, sep = "[[:space:]]") %>%
+  mutate(word = lemmatize_words(tolower(word))) %>%
+  group_by(word) %>%
+  summarise(freq = n()) -> imdb_wordcount
+  
+imdb_wordcount %>%
+  anti_join(tibble(word = c(stopwords::stopwords("en"), # English
+                            stopwords::stopwords("fr"), # French
+                            stopwords::stopwords("de"), # German
+                            stopwords::stopwords("it"), # Italian
+                            1:9, "na", "can"
+                            ))) %>% 
+  filter(nchar(word)>1) %>%
+  arrange(-freq) %>%
+  ungroup() %>%
+  slice(1:200) %>%
+  as.data.frame() -> df_word
+
+rownames(df_word) <- df_word$word
+wordcloud2(df_word, size = 1, shape = 'movie')
+```
+
+- Wordcloud for titles of movies with > 10,000,000 $ box office
+
+```{r}
+library(wordcloud2)
+library(stopwords)
+library(textstem)
+imdb %>%
+  filter(WorldwideGross>10^7) %>%
+  select(primaryTitle) %>%
+  transmute(word = gsub("[[:punct:]]+", "", primaryTitle)) %>%
+  separate_rows(word, sep = "[[:space:]]") %>%
+  mutate(word = lemmatize_words(tolower(word))) %>%
+  group_by(word) %>%
+  summarise(freq = n()) -> imdb_wordcount
+  
+imdb_wordcount %>%
+  anti_join(tibble(word = c(stopwords::stopwords("en"), # English
+                            stopwords::stopwords("fr"), # French
+                            stopwords::stopwords("de"), # German
+                            stopwords::stopwords("it"), # Italian
+                            1:9, "na", "can", "movie"
+                            ))) %>% 
+  filter(nchar(word)>1) %>%
+  arrange(-freq) %>%
+  ungroup() %>%
+  slice(1:200) %>%
+  as.data.frame() -> df_word
+
+rownames(df_word) <- df_word$word
+wordcloud2(df_word, size = 1, shape = 'movie')
+```
+
+Although words like "love", "story", etc are appearing in the most number of movies, there is no significant sigh of making more money with those words.
+
+## Build your crews
+
+Now, with a good script for your selected genres, you want to find the proper directors and actors to make the film happen.
+
+### Who makes those best movies
+
+```{r, fig.width = 8.54, fig.height=12}
+theme_minimal() +
+      theme(axis.title = element_blank(),
+            panel.grid.major.x = element_blank(),
+            panel.grid.minor = element_blank(),
+            legend.title = element_blank(),
+            legend.justification = c(0, 1), 
+            legend.position = c(.1, 1.075),
+            legend.background = element_blank(),
+            legend.direction="horizontal",
+            plot.title = element_text(size = 20, margin = margin(b = 10)),
+            plot.subtitle = element_text(size = 10, color = "darkslategrey", margin = margin(b = 25)),
+            plot.caption = element_text(size = 8, margin = margin(t = 10), color = "grey70", hjust = 0)) +
+text_theme + center_title -> theme_caliva
+
+imdb_people$`actor & actress` %>%
+  slice(1:30) %>%
+  mutate(primaryName = fct_reorder(primaryName, weighted_avg_rating)) %>%
+  arrange(desc(primaryName)) %>%
+  mutate(num = as.integer(primaryName)) -> temp1
+
+imdb_people$director %>%
+  slice(1:30) %>%
+  mutate(primaryName = fct_reorder(primaryName, weighted_avg_rating)) %>%
+  arrange(desc(primaryName)) %>%
+  mutate(num = as.integer(primaryName)) -> temp2
+
+lookup_actor <- function(name_nums){
+  result = c()
+  
+  for(name_num in name_nums){
+    #print(result)
+    #print(name_num)
+    if(!is.na(name_num) & name_num>=1 & name_num<=30){
+      result = c(result, as.character(temp1$primaryName[31-name_num]))
+    }else{
+      result = c(result, "")
+    }
+  }
+          
+  return(result)
+}
+
+ggplot(temp1) +
+  aes(y = num,
+      x = weighted_avg_rating
+      ) +
+  scale_x_continuous(limits = c(min(temp1$weighted_avg_rating) - 0.08, max(temp1$weighted_avg_rating)), expand = c(0.06694, 0)) +
+  scale_y_continuous(breaks = breaks_width(1), label = lookup_actor, expand = c(0,0), limits = c(0.01, 30.99) ) +
+  theme_jace + only_x  -> p
+
+for(i in 1:nrow(temp1)){
+  name_id = pull(temp1[i, "nconst"])
+
+  if(file.exists(paste0("data/images/", name_id, ".jpg"))){
+   image_path =  paste0("data/images/", name_id, ".jpg")
+  }else{
+    image_path =  system.file("extdata", "logo.png", package = "cowplot")
+
+  }
+
+  p + draw_image(magick::image_transparent(magick::image_read(image_path), color = "white"),
+                 y = 31-i,
+                 hjust = 0.5,
+                 vjust = 0.5,
+                 #x = pull(temp[i, "weighted_avg_rating"]),
+                 x = min(temp1$weighted_avg_rating) - 0.1,
+                 height = 0.88) -> p
+}
+p + geom_point() + theme_caliva +
+  labs(title = "The all-time most popular actors and actresses",
+       subtitle = "TOP 30 of all actors and actresses by total \n # of rating given in all his(her) movies",
+       x = "Avg. IMDb rating",
+       y = "") -> p_actor
+
+
+lookup_director <- function(name_nums){
+  result = c()
+  
+  for(name_num in name_nums){
+    #print(result)
+    #print(name_num)
+    if(!is.na(name_num) & name_num>=1 & name_num<=30){
+      result = c(result, as.character(temp2$primaryName[31-name_num]))
+    }else{
+      result = c(result, "")
+    }
+  }
+          
+  return(result)
+}
+
+ggplot(temp2) +
+  aes(y = num,
+      x = weighted_avg_rating) +
+  scale_x_continuous(limits = c(min(temp2$weighted_avg_rating) - 0.08, max(temp2$weighted_avg_rating)), expand = c(0.06694, 0)) +
+  scale_y_continuous(breaks = breaks_width(1), label = lookup_director, expand = c(0,0), limits = c(0.01, 30.99) ) +
+  theme_jace + only_x  -> p2
+
+for(i in 1:nrow(temp2)){
+  name_id = pull(temp2[i, "nconst"])
+
+  if(file.exists(paste0("data/images/", name_id, ".jpg"))){
+    image_path =  paste0("data/images/", name_id, ".jpg")
+  }else{
+    image_path =  system.file("extdata", "logo.png", package = "cowplot")
+  }
+
+  p2 + draw_image(magick::image_transparent(magick::image_read(image_path), color = "white"),
+                 y = 31-i,
+                 hjust = 0.5,
+                 vjust = 0.5,
+                 #x = pull(temp[i, "weighted_avg_rating"]),
+                 x = min(temp2$weighted_avg_rating) - 0.1,
+                 height = 0.88) -> p2
+}
+p2 + geom_point() + theme_caliva +
+   labs(title = "The all-time Best Directors",
+       subtitle = "TOP 30 of all directors by total \n # of rating given in all his(her) movies",
+       x = "Avg. IMDb rating",
+       y = "") -> p_director
+
+p_actor | p_director 
+```
+
+### Rating & ROI vs. Interaction Between Actors and Directors
+
+```{r}
+inner_join(
+  imdb_peole_movie %>% filter(category == "director"),
+  imdb_peole_movie %>% filter(category != "director"), 
+  by = c("tconst","averageRating","numVotes","WorldwideGross"),
+  suffix = c("_director", "_act")
+) %>%
+  group_by(nconst_director, 
+           primaryName_director,
+           nconst_act,
+           primaryName_act) %>%
+  summarise(work_time = n(),
+            WorldwideGross = sum(WorldwideGross, na.rm=T),
+            averageRating = sum(averageRating*numVotes, na.rm=T)/sum(numVotes)
+            ) %>%
+  filter(work_time > 3)  %>%
+  arrange(-WorldwideGross) %>%
+  mutate(people = paste0(primaryName_director, "\n",primaryName_act)) %>%
+  filter(WorldwideGross > 10^9) -> temp
+
+ggplot(temp) +
+  aes(x = WorldwideGross,
+      y = averageRating) +
+  geom_point(aes(size = work_time, color=people),
+             position = position_jitter(w = .15),
+             #size = 4,
+             alpha = 0.5) +
+  geom_vline(xintercept = median(temp$WorldwideGross),
+           color = "black",
+           linetype = "dashed") +
+  geom_hline(yintercept = median(temp$averageRating),
+           color = "black",
+           linetype = "dashed") +
+
+  geom_text_repel(aes(label = people),
+                  color = "gray25",
+                  family = "Times New Roman") +
+  theme_classic() +
+  scale_size_continuous(range = c(2, 5.2),   
+                        breaks = breaks_width(1), 
+                        labels = axis_unit_scaler_1) +
+  scale_x_continuous(breaks = pretty_breaks(10), labels = axis_unit_scaler_2) +
+  scale_y_continuous(breaks = pretty_breaks(10), labels = axis_unit_scaler) +
+
+  scale_color_manual(values = colorRampPalette(brewer.pal(11, "Spectral"))(26),
+                     ) +
+  guides(color = "none") +
+  theme(axis.line = element_blank()) +
+  get_lightxy(0.75) +
+  
+  labs(x = "Total box office ($)",
+       y = "Average IMDb Rating (0-10)",
+       color = "Genres",
+       size = "# of Movies together",
+       title = "Scatter plot matrix of Rating vs ROI",
+       subtitle = "1900-2021 Top 30 movies with highest box office") +
+  center_title +
+  text_theme
+```
+
+
+For most of the actors and directors that collaborate, profitabilities are not clearly correlated with ratings (except for Chris Evans!)
+
+
+
+## Understand how ratings work
+
+It's natural to have a rating below 9 scores for popular movies. Ratings goes done when more classes of people rates the movies. It's really hard for a popular movie to serve everyone's preference.
+
+```{r}
+set.seed(5702)
+imdb %>%
+  left_join(geners_type_map) -> temp
+  #filter(numVotes > 100000) %>%
+ggplot(temp) +
+  aes(x = numVotes,
+      y = averageRating) +
+  geom_bin2d(bins = 75, color = "black") +
+  geom_smooth(#data = temp %>% 
+                   #sample_frac(0.075) %>% 
+                   #bind_rows(temp %>% filter(numVotes > 500000)) %>% unique,
+              formula = 'y ~ x', 
+              method = "lm",
+              se = T,
+              span = 0.8) +
+  #scale_fill_continuous(low = "grey80", high = "#09005F", breaks = pretty_breaks(8)) 
+  scale_fill_viridis_c(direction = -1, option = 1) +
+  scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler, limits = c(NA, 10)) +
+  scale_x_continuous(breaks = pretty_breaks(8), labels = axis_unit_scaler_1) +
+  theme_jace +
+  get_lightxy(0.75) +
+  labs(title = "Rating vs # of votes") -> p1
+
+temp %>%
+ggplot() +
+  aes(x = WorldwideGross,
+      y = averageRating) +
+  geom_point(aes(color = Genres_type),
+             position = position_jitter(w = .15),
+             size = 2,
+             alpha = 0.25) +
+  
+  geom_smooth(#data = temp %>% 
+                 #sample_frac(0.075) %>% 
+                 #bind_rows(temp %>% filter(numVotes > 500000)) %>% unique,
+            formula = 'y ~ x', 
+            method = "loess",
+            #se = T,
+            span = 0.8) +
+  scale_y_continuous(breaks = breaks_width(2), labels = axis_unit_scaler, limits = c(NA, 10)) +
+  scale_x_continuous(breaks = pretty_breaks(8), labels = axis_unit_scaler_1) +
+  scale_color_manual(values = brewer.pal(10, "Spectral")) + 
+  theme_jace +
+  labs(title = "Rating vs box office")-> p2
+(p1 | p2) 
+  
+```
+
+- We can see that as the number of votes increases, there seems to be an invisible boundary that prevent them from being rate highly. On the contrary, all the movies with extremely high ratings have very few number of votes. Therefore, producers should find a balance between popularities and ratings.

@@ -300,6 +300,9 @@ imdb_mv_cleaned %>%
 library(magick)
 library(cowplot)
 
+name.basics = fread(file = 'data/input/name.basics.tsv')
+principals = fread(file = 'data/input/title.principals.tsv')
+
 principals %>% 
   right_join(imdb_mv_cleaned) %>%
   left_join(name.basics) %>%
@@ -315,10 +318,22 @@ imdb_person %>%
   mutate(category = ifelse(category == "director", category, "actor & actress")) %>%
   arrange(-total_voted) %>%
   group_by(category) %>%
-  slice(1:30) %>% ungroup %>%
+  #slice(1:30) %>% 
+  ungroup %>%
   split(~category) -> imdb_people
 
 save(imdb_people, file="data/processing/imdb_people.RData")
+
+
+principals %>% 
+  right_join(imdb_mv_cleaned) %>%
+  left_join(name.basics) %>%
+  filter(category %in% c("director", "actor", "actress"),
+         WorldwideGross > 0) -> imdb_peole_movie
+
+save(imdb_peole_movie, file="data/processing/imdb_peole_movie.RData")
+
+load(file="data/processing/imdb_peole_movie.RData")
 ```
 
 At this part we merge pricinpals to the movies they are in, and calculate the weighted average rating for each actor, actress and director.
