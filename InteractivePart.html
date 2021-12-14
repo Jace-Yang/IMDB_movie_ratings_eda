@@ -50,7 +50,7 @@
     <button type="1990-2000">1990-2000</button>
     <button type="2000-2010">2000-2010</button>
     <button type="2010-2020">2010-2020</button>
-    <!-- <button type="cum">All Years</button> -->
+    <button type="2021">2021</button>
 
 
 
@@ -1080,9 +1080,9 @@
           } else if (selected_year == "2010-2020") {
             var dat = movie_data.filter(d => d.year <= 2020 && d.year > 2010);
             update(rank(dat.slice(0,10)));
-          // } else if (selected_year == "cum") {
-          //   var dat = movie_data;
-          //   update(rank(dat.slice(0,10)));
+          } else if (selected_year == "2021") {
+            var dat = movie_data.filter(d => d.year == 2021);
+            update(rank(dat.slice(0,10)));
           };
         });
 
