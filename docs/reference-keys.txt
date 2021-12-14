@@ -17,7 +17,6 @@ insight-about-why-na-happens
 missing-by-years
 missing-by-genres
 results
-long-tail-effect-minority-make-up-majority
 who-makes-best-movies
 what-specific-features-do-movies-with-higher-profitability-have
 genres-effect
@@ -25,6 +24,9 @@ what-contributes-to-higher-rating-films
 not-genre
 popularity
 title-pattern
-is-commercial-success-high-profit-and-high-box-offices-positively-correlated-with-high-rating-or-a-trade-off
-interactive-component
+results-1
+get-ready-to-fail
+follow-the-best-practices
+c
+interactive-part
 conclusion
